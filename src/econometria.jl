@@ -35,6 +35,9 @@ md"""
 # Métodos econométricos en las Relaciones Internacionales
 """
 
+# ╔═╡ df5af68c-56cc-474f-8946-28c24da414bb
+#TableOfContents()   # from PlutoUI
+
 # ╔═╡ 3933bd10-1614-11ef-1809-91f19169bd9a
 md"""
 ## ¿Cómo representamos la incertidumbre?
@@ -306,7 +309,25 @@ md"""
 ## Ejemplo : Distribución Normal Multivariada
 
 ```math
-\mathbf{x} \sim N(\mathbf{\mu}, \mathbf{\Sigma}) = N\Bigg( 
+\mathbf{x} \sim N(\mathbf{\mu}, \mathbf{\Sigma})=
+ N\Bigg( 
+\begin{bmatrix}
+\mu_1 \\
+\mu_2 \\
+\mu_3
+\end{bmatrix}, 
+
+\begin{bmatrix}
+Var(X_1) & Cov(X_1,X_2) & Cov(X_1,X_3)\\
+Cov(X_2,X_1) & Var(X_2) & Cov(X_2,X_3)\\
+Cov(X_3,X_1) & Cov(X_3,X_2) & Var(X_3)
+\end{bmatrix}
+\Bigg)
+
+```
+
+```math
+\mathbf{x} \sim N(\mathbf{\mu}, \mathbf{\Sigma})=N\Bigg( 
 \begin{bmatrix}
 9 \\
 8 \\
@@ -321,6 +342,45 @@ md"""
 \Bigg)
 ```
 
+
+"""
+
+# ╔═╡ 0a0aafdb-66df-4a20-aa07-251450d5a5da
+md"""
+## Distribuciones Condicionales
+Una Distribución Condicional representa la distribución de una variable **dado** el valor de una o más variables aleatorias.
+
+La definición de *Propabilidad Condicional* es
+
+```math
+P(y|x) = \dfrac{P(y,x)}{P(x)}
+```
+
+donde $P(y|x)$ se lee como **la probabilidad de $y$ dado $x$**. En algunos contextos se refieren a $y$ como la **evidencia**.
+"""
+
+# ╔═╡ 77d8cadf-875d-4e7c-804b-496e651daee0
+md"""
+## Regla de Bayes
+
+```math
+P(y|x) = \dfrac{P(x|y)P(x)}{P(y)}
+```
+"""
+
+# ╔═╡ bb5238de-73c0-46f2-abef-2c04b741644a
+md"""
+## Modelos Lineales Gaussianos(Normales)
+
+Un **Modelo Lineal Gaussiano** para $P(Y|X)$ representa la distribución sobre una variable continua $Y$ como una distribución Normal donde la media es una función lineal del valor de la variable continua $X$. 
+
+La función de densidad está representada por 
+
+```math
+p(y\;|\;x) = N(y \;|\; mx + b\;,\; \sigma^2)
+```
+
+con parámetros $\mathbf{\Theta} = [m,b,\sigma]$. La media es una función lineal de $x$ definida por parámetros $m$ y $b$. La varianza $\sigma$ es constante.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1543,6 +1603,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─47b370ee-be85-4ec9-91b6-7c6d71890d30
 # ╟─74dd266f-31b8-40ca-8166-d4d9c951fe02
+# ╟─df5af68c-56cc-474f-8946-28c24da414bb
 # ╟─3933bd10-1614-11ef-1809-91f19169bd9a
 # ╟─5da8a0cf-fe34-4016-8b40-db9420790d34
 # ╟─96341f86-0eb3-483a-9963-ef2dfaedc3a2
@@ -1568,5 +1629,8 @@ version = "1.4.1+1"
 # ╟─a643b24c-8935-43a5-9e1a-f2d55b554f48
 # ╟─0066dfcc-2d3c-46b3-b42a-1683937bec3c
 # ╟─d4680054-7f46-4aa3-adf1-151f7dbfd310
+# ╟─0a0aafdb-66df-4a20-aa07-251450d5a5da
+# ╟─77d8cadf-875d-4e7c-804b-496e651daee0
+# ╟─bb5238de-73c0-46f2-abef-2c04b741644a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
