@@ -212,7 +212,7 @@ La densidad tiene la siguiente forma funcional y parametrización:
 aside(tip(md"Recuerda: la media $\mu$ es un parámetro de localización y la varianza $\sigma^2$ es un parámetro de dispersión."),v_offset=100)
 
 # ╔═╡ c701e351-2eac-45d7-abc2-90ad154cd520
-@bind mu_slider Slider(0:0.1:200, default=80)
+@bind mu_slider Slider(1.3:0.01:2.2, default=1.68)
 
 # ╔═╡ c2267fb2-7b34-45f5-8bbb-12938468b660
 md"""
@@ -222,7 +222,7 @@ Selecciona valor de $\mu$ = $(mu_slider)
 """
 
 # ╔═╡ 2caad978-51e4-4aab-a694-344229378cfb
-@bind sigma_slider Slider(0:0.1:40, default=5.6)
+@bind sigma_slider Slider(0:0.001:0.5, default=0.06)
 
 # ╔═╡ a0e667bb-e6bc-4bc1-9a33-4ae86f2b33af
 md"""
@@ -231,9 +231,9 @@ Selecciona valor de $\sigma^2$ = $(sigma_slider)
 
 # ╔═╡ 24f393d3-41d8-4943-806e-21e9e3261864
 begin 
-	normal_rango = 0.0:0.01:200
+	normal_rango = 1.2:0.001:2.2
 	plot(normal_rango, pdf.(Normal(mu_slider, sigma_slider), normal_rango), label="distribution")
-	xlabel!("Rango")
+	xlabel!("Estatura [m]")
 	ylabel!("Densidad de probabilidad")
 end
 
@@ -317,22 +317,7 @@ Supongamos tres variables aleatorias que siguen una distribución normal univari
 * La variable aleatoria $X_1$ modela la distribución de los precios de vivienda en la colonia Napoles la cual tiene parámetros $N(9,1)$.
 * La variable aleatoria $X_2$ modela la distribución de los precios de vivienda en la colonia Del Valle la cual tiene parámetros $N(8,2)$.
 * La variable aleatoria $X_3$ modela la distribución de los precios de vivienda en la colonia Morelos la cual tiene parámetros $N(1,4)$.
-"""
 
-# ╔═╡ 0066dfcc-2d3c-46b3-b42a-1683937bec3c
-begin
-	normal_rango_compara = -10.0:0.01:40
-	plot(normal_rango_compara, pdf.(Normal(9, 1), normal_rango_compara), label="X1", title = "Comparación de las tres variables aleatorias", linewidth=3)
-	plot!(normal_rango_compara, pdf.(Normal(8, 2), normal_rango_compara), label="X2", linewidth=3)
-	plot!(normal_rango_compara, pdf.(Normal(1,4), normal_rango_compara), label="X3", linewidth=3)
-
-	xlabel!("Rango")
-	ylabel!("Densidad de probabilidad")
-end
-
-# ╔═╡ d4680054-7f46-4aa3-adf1-151f7dbfd310
-md"""
-## Ejemplo : Distribución Normal Multivariada
 
 ```math
 \mathbf{x} \sim N(\mathbf{\mu}, \mathbf{\Sigma})=
@@ -367,9 +352,18 @@ Cov(X_3,X_1) & Cov(X_3,X_2) & Var(X_3)
 \end{bmatrix}
 \Bigg)
 ```
-
-
 """
+
+# ╔═╡ 0066dfcc-2d3c-46b3-b42a-1683937bec3c
+begin
+	normal_rango_compara = -10.0:0.01:40
+	plot(normal_rango_compara, pdf.(Normal(9, 1), normal_rango_compara), label="X1", title = "Comparación de las tres variables aleatorias", linewidth=3)
+	plot!(normal_rango_compara, pdf.(Normal(8, 2), normal_rango_compara), label="X2", linewidth=3)
+	plot!(normal_rango_compara, pdf.(Normal(1,4), normal_rango_compara), label="X3", linewidth=3)
+
+	xlabel!("Rango")
+	ylabel!("Densidad de probabilidad")
+end
 
 # ╔═╡ 0a0aafdb-66df-4a20-aa07-251450d5a5da
 md"""
@@ -403,10 +397,233 @@ Un **Modelo Lineal Gaussiano** para $P(Y|X)$ representa la distribución sobre u
 La función de densidad está representada por 
 
 ```math
-p(y\;|\;x) = N(y \;|\; mx + b\;,\; \sigma^2)
+p(y\;|\;x;\mathbf{\theta}) = N(y \;|\;b+ mx \;,\; \sigma^2)
 ```
 
-con parámetros $\mathbf{\Theta} = [m,b,\sigma]$. La media es una función lineal de $x$ definida por parámetros $m$ y $b$. La varianza $\sigma$ es constante.
+con parámetros $\mathbf{\theta} = [m,b,\sigma]$. La media es una función lineal de $x$ definida por parámetros $m$ y $b$. La varianza $\sigma$ es constante.
+
+
+"""
+
+# ╔═╡ 37b4e17d-759b-424d-adf0-888464af0189
+md"""
+
+## Regresión Lineal. Caso Univariado
+
+En el contexto de econometría, los parámetros $b$, $m$ corresponden a los parámetros $\beta_0$ y $\beta_1$. De manera que el Modelo Lineal del caso univariado (*i.e* donde sólo hay una **variable independiente o exógena**) de la regresión lineal es igual a 
+
+```math
+p(y\;|\;x;\mathbf{\theta}) = N(y \;|\; \beta_0 + \beta_1x \;,\; \sigma^2)
+```
+
+con parámetros $\mathbf{\theta} = [\beta_0, \beta_1,\sigma]$.
+
+En el contexto de regresión, se asume que el parámetro $\sigma$ es constante. Este supuesto se le conoce como **homoscedasticidad**.
+"""
+
+# ╔═╡ 117b4d93-ffa8-46ca-a634-9e271df85cdb
+tip(md"A la ecuación 
+
+```math
+\beta_0 + \beta_1x 
+```
+
+Se le concce como **ecuación de regresión**.
+
+A los parámetros $\beta_0$ y $\beta_1$ se les conoce como **parámetros poblacionales**, en el sentido que generan las observaciones del modelo de regresión.
+")
+
+# ╔═╡ 0bb963b0-b253-4a2e-bd76-70b3ffe63414
+md"""
+## Ilustración del Modelo de Regresión Lineal Univariado (Varianza constante u Homocedástica)
+"""
+
+# ╔═╡ 1b53e9f4-8f51-4c53-8fcf-c8a1143246b3
+aside(tip(md"La linea roja se le denomina la **linea de regresión** y es obtenida a partir de la **ecuación de regresión** 
+
+```math
+\beta_0 + \beta_1 x
+```
+"),v_offset=100)
+
+# ╔═╡ 05ec14a4-540b-47ae-8792-4e5638d6083f
+begin
+	reg_uni_sigma_constante_url = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/linreg_1d_hetero_var_fixed.svg";
+	reg_uni_sigma_constante_path = "images/linreg_1d_hetero_var_fixed.svg";
+	RobustLocalResource(reg_uni_sigma_constante_url,reg_uni_sigma_constante_path)
+end
+
+# ╔═╡ a63a780d-1fe7-4130-a4a3-5fe8e2189b44
+md"""
+## Ilustración del Modelo de Regresión Lineal Univariado (Varianza variable u Heterocedástica)
+"""
+
+# ╔═╡ fe38687e-bf62-495f-a505-c5c3541c9444
+aside(tip(md"La linea roja se le denomina la **linea de regresión** y es obtenida a partir de la **ecuación de regresión** 
+
+```math
+\beta_0 + \beta_1 x
+```
+"),v_offset=100)
+
+# ╔═╡ ade21289-01f6-4660-87af-9a842499698f
+begin
+	reg_uni_sigma_var_url = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/linreg_1d_hetero_var_adaptive.svg";
+	reg_uni_sigma_var_path = "images/linreg_1d_hetero_var_adaptive.svg";
+	RobustLocalResource(reg_uni_sigma_var_url,reg_uni_sigma_var_path)
+end
+
+# ╔═╡ d37579b5-71f3-4a32-9396-2cf524b3b7b1
+md"""
+## Consideraciones del modelo de Regresión Lineal Univariado
+
+* Podemos usar los valores de una variable ($x$) para **predecir** los valores de otra variable ($y$). Decimos que explicamos a $y$ usando $x$.
+"""
+
+# ╔═╡ 88f86ae7-c0c5-4224-b1da-e7e8fc3ecc6a
+warning_box(md"Esta es una **explicación estadística**. Esta **no** es una explicación del **por qué** pasa $y$ (a menos que encontremos el efecto de $x$ sobre $y$). El modelo se limita a la capacidad de predecir $y$ mediante $x$.")
+
+
+# ╔═╡ 47081741-e80b-4ebc-a746-f41c7e673b75
+md"""
+## Consideraciones del modelo de Regresión Lineal Univariado
+
+* Fácil interpretación de los coeficientes. Por ejemplo, el incremento en una unidad en $x$ está asociado con un incremento en $\beta_1$ veces en $y$.
+* Si usamos observaciones de las variables predictoras en la regresión estimada, obtenemos una predicción $\hat{y}$. Esta es la parte de $y$ que es explicada por la regresión. La diferencia entre $y$ y $\hat{y}$ corresponde a la parte no explicada por la regresión, y se le denomina el **residual** $\varepsilon$.
+
+```math
+\varepsilon = y - \hat{y}
+```
+* Si agregamos más variables a la ecuación de regresión, como $y = \beta_0 + \beta_1x + \beta_2 z$, el parámetro $\beta_1$ se interpreta como *la parte de $y$ que no es explicada por $z$* y *la parte de $x$ que no es explicada por $z$*.
+
+* Si consideramos que la relación entre $y$ y $x$ no está bien explicada por una línea recta, podemos usar una línea curva en su lugar. Para esto, podemos reformular la ecuación de regresión de la siguiente manera
+
+```math
+y = \beta_0 + \beta_1 x + \beta_2 x^2
+```
+
+"""
+
+# ╔═╡ 53765982-029f-4a3e-a7a3-2b0b565b0416
+md"""
+## ¿Cómo ajustamos la línea de regresión?
+
+* Queremos que nuestro modelo de regresión tenga una capacidad predictoria alta.
+* Nos gustaría que la parte que **no** es explicada por la regresión, el **residual** $\varepsilon$ sea **mínimo**, idealmente igual a $0$.
+* O de forma equivalente, nos gustaría que la diferencia entre $y$ y $\hat{y}$ sea la mínima o, idealmente, $0$. 
+* Necesitamos resolver un problema de **optimización** donde buscamos decidir los valores de $\beta_0$ y $\beta_1$ que **minimizan** el residual.
+* Cuando el problema de optimización se restringe a minimizar la diferencia **al cuadrado** entre $y$ y $\hat{y}$:
+
+```math
+\min_{\beta_0, \beta_1} \varepsilon = (y - \hat{y})^2
+```
+* estamos utilizando el método de Mínimos Cuadrados Ordinarios (OLS en sus siglas en inglés *Ordinary least squares*)
+
+* Los valores de $\beta_0$ y $\beta_1$ estimados por este método se les conoce como **coeficientes** y se definen como $\hat{\beta_0}$ y $\hat{\beta_1}$.
+"""
+
+# ╔═╡ aa6dc6b6-7e47-4ab5-8d56-7c22fe8c6e04
+md"""
+## ¿Cómo ajustamos la línea de regresión?
+
+* Supongamos que el **modelo verdadero** o **proceso generador de datos** está dado por algún modelo condicional:
+
+```math
+p(y\;|\;x;\mathbf{\theta}) = N(y \;|\; \beta_0 + \beta_1 x \;,\; \sigma^2)
+```
+"""
+
+# ╔═╡ 76890865-422c-4b07-ad1b-dcb9c34e2159
+begin
+	beta_0_true = 5.0;nothing
+	beta_1_true = 0.3;nothing
+
+	x_reg = collect(0.0:0.5:50);nothing
+	n_reg = length(x_reg);nothing
+	
+	modelo_true = beta_0_true .+ x_reg.*beta_1_true;nothing
+	data_true = modelo_true +rand(Normal(0, 3.0), n_reg);nothing
+end
+
+# ╔═╡ 386cea5a-4136-42b0-a85a-52efd1233007
+begin 
+	plot(x_reg, modelo_true, label = "Media del modelo", linewidth = 3)
+	scatter!(x_reg,data_true, label = "Datos generados a partir del Modelo")
+end 
+
+
+
+# ╔═╡ dd0f052b-3843-440f-a610-51d3d9959d68
+@bind beta_0_ejer NumberField(0.0:0.02:30, default=2.5)
+
+# ╔═╡ bdb7140f-d570-4eb4-95da-8ee886c4f502
+md"""
+## Actividad: Selecciona los valores de $\beta_0$ y $\beta_1$ que hagan $0$ (minimicen) el residual
+
+Selecciona valor de $\hat{\beta_0}$ = $(beta_0_ejer)
+"""
+
+# ╔═╡ 8f683009-c2d1-47dc-b9b0-9575cccf14b7
+@bind beta_1_ejer NumberField(0.1:0.01:3, default=0.7)
+
+# ╔═╡ 16399c8c-753b-4841-925b-bad5ab1b46ab
+md"""
+Selecciona valor de $\hat{\beta_1}$ = $(beta_1_ejer)
+"""
+
+# ╔═╡ a8af1243-e839-4223-a0fe-2c5bb65761e1
+begin
+	modelo_propuesto = beta_0_ejer .+ x_reg.*beta_1_ejer;nothing
+	residual_ejercicio = sum((modelo_true - modelo_propuesto ).^2)
+
+	plot(x_reg, modelo_true, label = "Media del modelo", linewidth = 3)
+	plot!(x_reg, modelo_propuesto, label = "OLS", linewidth = 3)
+	scatter!(x_reg,data_true, label = "Datos generados a partir del Modelo")
+end
+
+# ╔═╡ 97cd2fea-2bd1-41ae-a243-e1fb0b3121e9
+md"""
+Valor del residual $\varepsilon$ = $(residual_ejercicio)
+"""
+
+# ╔═╡ 8a2e443e-538e-4051-9559-0255b1e15a28
+md"""
+## Prueba de hipótesis 
+
+* Los coeficientes $\beta_0$ y $\beta_1$ **también siguen una distribución de probabilidad**. 
+* Bajo la estimación por OLS, el coeficiente $\hat{\beta_1}$ sigue una distribución normal 
+
+```math
+\hat{\beta_1} \sim N \Bigg(\beta_1, \sqrt{\dfrac{\sigma^2}{\text{var}(X)n}} \Bigg)
+```
+
+con media $\beta_1$ (*i.e* media en el parámetro poblacional) y desviación estándar $\sqrt{\dfrac{\sigma^2}{\text{var}(X)n}}$, donde $n$ es la cantidad de observaciones en los datos, $\sigma$ es la desviación estándar del residual $\varepsilon$ y $\text{var}(X)$ es la varianza de los datos. 
+
+* **¿Por qué queremos conocer la distribución de los coeficientes?** Para realizar **Pruebas de Hipótesis**. 
+
+"""
+
+# ╔═╡ 61ed66b6-5efc-44da-a72c-ce767d2ea8f7
+md"""
+# Pruebas de Hipótesis
+
+* Cuando decidimos si un modelo es un buen descriptor de nuestros datos o no lo es, siempre es útil preguntarnos **¿con respecto a qué?**
+* Para formalizar esta pregunta, supongamos que tenemos 2 hipótesis: una **hipótesis nula** $H_0$ y una **hipótesis alternativa** $H_1$.
+* Queremos elegir aquella hipótesis que pensamos es más probable. 
+* En el contexto de regresión, las hipótesis a contrastar para $\beta_1$ son las siguientes:
+
+```math
+	H_0 : \beta_1 = 0
+```
+
+```math
+	H_1 : \beta_1 \neq 0
+```
+* Si consideramos que la $H_1$ es más probable que $H_0$, es decir, **rechazamos** la $H_0$, podemos decir que *hay evidencia para pensar que es poco probable que el valor del coeficiente* sea $0$.
+* El poco probable que el valor del coeficiente sea $0$, significa que hay **alguna** relación entre la variables explicativa y la variable de respuesta.
+
+* Las Pruebas de Hipótesis
+Para poder contar con un mecanismo para cuantificar el grado de incertidumbre del coeficiente estimado. 
 """
 
 # ╔═╡ 8cf93a7e-5e34-47bf-ba49-55305661a7da
@@ -453,10 +670,10 @@ uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.3.2"
 
 [[deps.AliasTables]]
-deps = ["Random"]
-git-tree-sha1 = "ca95b2220ef440817963baa71525a8f2f4ae7f8f"
+deps = ["PtrArrays", "Random"]
+git-tree-sha1 = "9876e1e164b144ca45e9e3198d0b689cadfed9ff"
 uuid = "66dad0bd-aa9a-41b7-9441-69ab47430ed8"
-version = "1.0.0"
+version = "1.1.3"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -481,9 +698,9 @@ version = "1.0.8+1"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "a4c43f59baa34011e303e76f5c8c91bf58415aaf"
+git-tree-sha1 = "a2f1c8c668c8e3cb4cca4e57a8efdb09067bb3fd"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
-version = "1.18.0+1"
+version = "1.18.0+2"
 
 [[deps.Calculus]]
 deps = ["LinearAlgebra"]
@@ -505,9 +722,9 @@ version = "0.7.4"
 
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
-git-tree-sha1 = "67c1f244b991cad9b0aa4b7540fb758c2488b129"
+git-tree-sha1 = "4b270d6465eb21ae89b732182c20dc165f8bf9f2"
 uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
-version = "3.24.0"
+version = "3.25.0"
 
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
@@ -527,15 +744,15 @@ weakdeps = ["SpecialFunctions"]
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
-git-tree-sha1 = "fc08e5930ee9a4e03f84bfb5211cb54e7769758a"
+git-tree-sha1 = "362a287c3aa50601b0bc359053d5c2468f0e7ce0"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
-version = "0.12.10"
+version = "0.12.11"
 
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
-git-tree-sha1 = "c955881e3c981181362ae4088b35995446298b80"
+git-tree-sha1 = "b1c55339b7c6c350ee89f2c1604299660525b248"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "4.14.0"
+version = "4.15.0"
 weakdeps = ["Dates", "LinearAlgebra"]
 
     [deps.Compat.extensions]
@@ -629,9 +846,9 @@ version = "0.1.10"
 
 [[deps.Expat_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "4558ab818dcceaab612d1bb8c19cee87eda2b83c"
+git-tree-sha1 = "1c6317308b9dc757616f0b5cb379db10494443a7"
 uuid = "2e619515-83b5-522b-bb60-26c02a35a201"
-version = "2.5.0+0"
+version = "2.6.2+0"
 
 [[deps.FFMPEG]]
 deps = ["FFMPEG_jll"]
@@ -650,9 +867,9 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.FillArrays]]
 deps = ["LinearAlgebra"]
-git-tree-sha1 = "881275fc6b8c6f0dfb9cfa4a878979a33cb26be3"
+git-tree-sha1 = "0653c0a2396a6da5bc4766c43041ef5fd3efbe57"
 uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
-version = "1.10.1"
+version = "1.11.0"
 weakdeps = ["PDMats", "SparseArrays", "Statistics"]
 
     [deps.FillArrays.extensions]
@@ -662,15 +879,15 @@ weakdeps = ["PDMats", "SparseArrays", "Statistics"]
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
-git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
+git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
-version = "0.8.4"
+version = "0.8.5"
 
 [[deps.Fontconfig_jll]]
-deps = ["Artifacts", "Bzip2_jll", "Expat_jll", "FreeType2_jll", "JLLWrappers", "Libdl", "Libuuid_jll", "Pkg", "Zlib_jll"]
-git-tree-sha1 = "21efd19106a55620a188615da6d3d06cd7f6ee03"
+deps = ["Artifacts", "Bzip2_jll", "Expat_jll", "FreeType2_jll", "JLLWrappers", "Libdl", "Libuuid_jll", "Zlib_jll"]
+git-tree-sha1 = "db16beca600632c95fc8aca29890d83788dd8b23"
 uuid = "a3f928ae-7b40-5064-980b-68af3947d34b"
-version = "2.13.93+0"
+version = "2.13.96+0"
 
 [[deps.Format]]
 git-tree-sha1 = "9c68794ef81b08086aeb32eeaf33531668d5f5fc"
@@ -679,15 +896,15 @@ version = "1.3.7"
 
 [[deps.FreeType2_jll]]
 deps = ["Artifacts", "Bzip2_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
-git-tree-sha1 = "d8db6a5a2fe1381c1ea4ef2cab7c69c2de7f9ea0"
+git-tree-sha1 = "5c1d8ae0efc6c2e7b1fc502cbe25def8f661b7bc"
 uuid = "d7e528f0-a631-5988-bf34-fe36492bcfd7"
-version = "2.13.1+0"
+version = "2.13.2+0"
 
 [[deps.FriBidi_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "aa31987c2ba8704e23c6c8ba8a4f769d5d7e4f91"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "1ed150b39aebcc805c26b93a8d0122c940f64ce2"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
-version = "1.0.10+0"
+version = "1.0.14+0"
 
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll"]
@@ -696,16 +913,16 @@ uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.3.9+0"
 
 [[deps.GR]]
-deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Pkg", "Preferences", "Printf", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "UUIDs", "p7zip_jll"]
-git-tree-sha1 = "3437ade7073682993e092ca570ad68a2aba26983"
+deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Preferences", "Printf", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "p7zip_jll"]
+git-tree-sha1 = "ddda044ca260ee324c5fc07edb6d7cf3f0b9c350"
 uuid = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
-version = "0.73.3"
+version = "0.73.5"
 
 [[deps.GR_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Cairo_jll", "FFMPEG_jll", "Fontconfig_jll", "FreeType2_jll", "GLFW_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pixman_jll", "Qt6Base_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "a96d5c713e6aa28c242b0d25c1347e258d6541ab"
+git-tree-sha1 = "278e5e0f820178e8a26df3184fcb2280717c79b1"
 uuid = "d2c73de3-f751-5644-a686-071e5b155ba9"
-version = "0.73.3+0"
+version = "0.73.5+0"
 
 [[deps.Gettext_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Libiconv_jll", "Pkg", "XML2_jll"]
@@ -715,9 +932,9 @@ version = "0.21.0+0"
 
 [[deps.Glib_jll]]
 deps = ["Artifacts", "Gettext_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Libiconv_jll", "Libmount_jll", "PCRE2_jll", "Zlib_jll"]
-git-tree-sha1 = "359a1ba2e320790ddbe4ee8b4d54a305c0ea2aff"
+git-tree-sha1 = "7c82e6a6cd34e9d935e9aa4051b66c6ff3af59ba"
 uuid = "7746bdde-850d-59dc-9ae8-88ece973131d"
-version = "2.80.0+0"
+version = "2.80.2+0"
 
 [[deps.Graphite2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -732,9 +949,9 @@ version = "1.0.2"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "2c3ec1f90bb4a8f7beafb0cffea8a4c3f4e636ab"
+git-tree-sha1 = "d1d712be3164d61d1fb98e7ce9bcbc6cc06b45ed"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.10.6"
+version = "1.10.8"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg"]
@@ -795,9 +1012,9 @@ version = "0.21.4"
 
 [[deps.JpegTurbo_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "3336abae9a713d2210bb57ab484b1e065edd7d23"
+git-tree-sha1 = "c84a835e1a09b289ffcd2271bf2a337bbdda6637"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
-version = "3.0.2+0"
+version = "3.0.3+0"
 
 [[deps.JuliaInterpreter]]
 deps = ["CodeTracking", "InteractiveUtils", "Random", "UUIDs"]
@@ -806,10 +1023,10 @@ uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
 version = "0.9.31"
 
 [[deps.LAME_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "f6250b16881adf048549549fba48b1161acdac8c"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "170b660facf5df5de098d866564877e119141cbd"
 uuid = "c1c5ebd0-6772-5130-a774-d5fcae4a789d"
-version = "3.100.1+0"
+version = "3.100.2+0"
 
 [[deps.LERC_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -824,10 +1041,10 @@ uuid = "1d63c593-3942-5779-bab2-d838dc0a180e"
 version = "15.0.7+0"
 
 [[deps.LZO_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "e5b909bcf985c5e2605737d2ce278ed791b89be6"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "70c5da094887fd2cae843b8db33920bac4b6f07d"
 uuid = "dd4b983a-f0e5-5f8d-a1b7-129d4a5fb1ac"
-version = "2.10.1+0"
+version = "2.10.2+0"
 
 [[deps.LaTeXStrings]]
 git-tree-sha1 = "50901ebc375ed41dbf8058da26f9de442febbbec"
@@ -882,10 +1099,10 @@ uuid = "e9f186c6-92d2-5b65-8a66-fee21dc1b490"
 version = "3.2.2+1"
 
 [[deps.Libgcrypt_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgpg_error_jll", "Pkg"]
-git-tree-sha1 = "64613c82a59c120435c067c2b809fc61cf5166ae"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgpg_error_jll"]
+git-tree-sha1 = "9fd170c4bbfd8b935fdc5f8b7aa33532c991a673"
 uuid = "d4300ac3-e22c-5743-9152-c294e39db1e4"
-version = "1.8.7+0"
+version = "1.8.11+0"
 
 [[deps.Libglvnd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libX11_jll", "Xorg_libXext_jll"]
@@ -894,10 +1111,10 @@ uuid = "7e76a0d4-f3c7-5321-8279-8d96eeed0f29"
 version = "1.6.0+0"
 
 [[deps.Libgpg_error_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "c333716e46366857753e273ce6a69ee0945a6db9"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "fbb1f2bef882392312feb1ede3615ddc1e9b99ed"
 uuid = "7add5ba3-2f88-524e-9cd5-f83b8a55f7b8"
-version = "1.42.0+0"
+version = "1.49.0+0"
 
 [[deps.Libiconv_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -907,9 +1124,9 @@ version = "1.17.0+0"
 
 [[deps.Libmount_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "dae976433497a2f841baadea93d27e68f1a12a97"
+git-tree-sha1 = "0c4f9c4f1a50d8f35048fa0532dabbadf702f81e"
 uuid = "4b2f31a3-9ecc-558c-b454-b3730dcb73e9"
-version = "2.39.3+0"
+version = "2.40.1+0"
 
 [[deps.Libtiff_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "XZ_jll", "Zlib_jll", "Zstd_jll"]
@@ -919,9 +1136,9 @@ version = "4.5.1+1"
 
 [[deps.Libuuid_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "0a04a1318df1bf510beb2562cf90fb0c386f58c4"
+git-tree-sha1 = "5ee6203157c120d79034c748a2acba45b82b8807"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
-version = "2.39.3+1"
+version = "2.40.1+0"
 
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
@@ -954,9 +1171,9 @@ version = "1.0.3"
 
 [[deps.LoweredCodeUtils]]
 deps = ["JuliaInterpreter"]
-git-tree-sha1 = "31e27f0b0bf0df3e3e951bfcc43fe8c730a219f6"
+git-tree-sha1 = "c6a36b22d2cca0e1a903f00f600991f97bf5f426"
 uuid = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
-version = "2.4.5"
+version = "2.4.6"
 
 [[deps.MIMEs]]
 git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
@@ -1081,9 +1298,9 @@ version = "1.3.0"
 
 [[deps.Pixman_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl"]
-git-tree-sha1 = "64779bc4c9784fee475689a1752ef4d5747c5e87"
+git-tree-sha1 = "35621f10a7531bc8fa58f74610b1bfb70a3cfc6b"
 uuid = "30392449-352a-5448-841d-b1acce4e97dc"
-version = "0.42.2+0"
+version = "0.43.4+0"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -1162,6 +1379,11 @@ version = "1.4.3"
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
+[[deps.PtrArrays]]
+git-tree-sha1 = "077664975d750757f30e739c870fbbdc01db7913"
+uuid = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
+version = "1.1.0"
+
 [[deps.Qt6Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Vulkan_Loader_jll", "Xorg_libSM_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_cursor_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "libinput_jll", "xkbcommon_jll"]
 git-tree-sha1 = "37b7bb7aabf9a085e0044307e1717436117f2b3b"
@@ -1224,10 +1446,10 @@ uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
 version = "0.7.1"
 
 [[deps.Rmath_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "6ed52fdd3382cf21947b15e8870ac0ddbff736da"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "d483cd324ce5cf5d61b77930f0bbd6cb61927d21"
 uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
-version = "0.4.0+0"
+version = "0.4.2+0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -1269,9 +1491,9 @@ version = "1.10.0"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "e2cfc4012a19088254b3950b85c3c1d8882d864d"
+git-tree-sha1 = "2f5d4697f21388cbe1ff299430dd169ef97d7e14"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "2.3.1"
+version = "2.4.0"
 
     [deps.SpecialFunctions.extensions]
     SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
@@ -1340,9 +1562,9 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.TranscodingStreams]]
-git-tree-sha1 = "71509f04d045ec714c4748c785a59045c3736349"
+git-tree-sha1 = "5d54d076465da49d6746c647022f3b3674e64156"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.10.7"
+version = "0.10.8"
 weakdeps = ["Random", "Test"]
 
     [deps.TranscodingStreams.extensions]
@@ -1373,9 +1595,9 @@ version = "0.4.1"
 
 [[deps.Unitful]]
 deps = ["Dates", "LinearAlgebra", "Random"]
-git-tree-sha1 = "3c793be6df9dd77a0cf49d80984ef9ff996948fa"
+git-tree-sha1 = "dd260903fdabea27d9b6021689b3cd5401a57748"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
-version = "1.19.0"
+version = "1.20.0"
 
     [deps.Unitful.extensions]
     ConstructionBaseUnitfulExt = "ConstructionBase"
@@ -1416,9 +1638,9 @@ version = "1.31.0+0"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
-git-tree-sha1 = "532e22cf7be8462035d092ff21fada7527e2c488"
+git-tree-sha1 = "52ff2af32e591541550bd753c0da8b9bc92bb9d9"
 uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
-version = "2.12.6+0"
+version = "2.12.7+0"
 
 [[deps.XSLT_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgcrypt_jll", "Libgpg_error_jll", "Libiconv_jll", "Pkg", "XML2_jll", "Zlib_jll"]
@@ -1433,16 +1655,16 @@ uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
 version = "5.4.6+0"
 
 [[deps.Xorg_libICE_jll]]
-deps = ["Libdl", "Pkg"]
-git-tree-sha1 = "e5becd4411063bdcac16be8b66fc2f9f6f1e8fe5"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "326b4fea307b0b39892b3e85fa451692eda8d46c"
 uuid = "f67eecfb-183a-506d-b269-f58e52b52d7c"
-version = "1.0.10+1"
+version = "1.1.1+0"
 
 [[deps.Xorg_libSM_jll]]
-deps = ["Libdl", "Pkg", "Xorg_libICE_jll"]
-git-tree-sha1 = "4a9d9e4c180e1e8119b5ffc224a7b59d3a7f7e18"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libICE_jll"]
+git-tree-sha1 = "3796722887072218eabafb494a13c963209754ce"
 uuid = "c834827a-8449-5923-a945-d239c165b7dd"
-version = "1.2.3+0"
+version = "1.2.4+0"
 
 [[deps.Xorg_libX11_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
@@ -1469,10 +1691,10 @@ uuid = "a3789734-cfe1-5b06-b2d0-1dd0d9d62d05"
 version = "1.1.4+0"
 
 [[deps.Xorg_libXext_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libX11_jll"]
-git-tree-sha1 = "b7c0aa8c376b31e4852b360222848637f481f8c3"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
+git-tree-sha1 = "d2d1a5c49fae4ba39983f63de6afcbea47194e85"
 uuid = "1082639a-0dae-5f34-9b06-72781eeb8cb3"
-version = "1.3.4+4"
+version = "1.3.6+0"
 
 [[deps.Xorg_libXfixes_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libX11_jll"]
@@ -1499,10 +1721,10 @@ uuid = "ec84b674-ba8e-5d96-8ba1-2a689ba10484"
 version = "1.5.2+4"
 
 [[deps.Xorg_libXrender_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Xorg_libX11_jll"]
-git-tree-sha1 = "19560f30fd49f4d4efbe7002a1037f8c43d43b96"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
+git-tree-sha1 = "47e45cd78224c53109495b3e324df0c37bb61fbe"
 uuid = "ea2f1a96-1ddc-540d-b46f-429655e07cfa"
-version = "0.9.10+4"
+version = "0.9.11+0"
 
 [[deps.Xorg_libpthread_stubs_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1606,10 +1828,10 @@ uuid = "1a1c6b14-54f6-533d-8383-74cd7377aa70"
 version = "3.1.1+0"
 
 [[deps.libaom_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "3a2ea60308f0996d26f1e5354e10c24e9ef905d4"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "1827acba325fdcdf1d2647fc8d5301dd9ba43a9d"
 uuid = "a4ae2306-e953-59d6-aa16-d00cac43593b"
-version = "3.4.0+0"
+version = "3.9.0+0"
 
 [[deps.libass_jll]]
 deps = ["Artifacts", "Bzip2_jll", "FreeType2_jll", "FriBidi_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl", "Pkg", "Zlib_jll"]
@@ -1719,10 +1941,32 @@ version = "1.4.1+1"
 # ╟─f8202f20-af65-43bd-8924-72805ae12f5f
 # ╟─a643b24c-8935-43a5-9e1a-f2d55b554f48
 # ╟─0066dfcc-2d3c-46b3-b42a-1683937bec3c
-# ╟─d4680054-7f46-4aa3-adf1-151f7dbfd310
 # ╟─0a0aafdb-66df-4a20-aa07-251450d5a5da
 # ╟─77d8cadf-875d-4e7c-804b-496e651daee0
 # ╟─bb5238de-73c0-46f2-abef-2c04b741644a
+# ╟─37b4e17d-759b-424d-adf0-888464af0189
+# ╟─117b4d93-ffa8-46ca-a634-9e271df85cdb
+# ╟─0bb963b0-b253-4a2e-bd76-70b3ffe63414
+# ╟─1b53e9f4-8f51-4c53-8fcf-c8a1143246b3
+# ╟─05ec14a4-540b-47ae-8792-4e5638d6083f
+# ╟─a63a780d-1fe7-4130-a4a3-5fe8e2189b44
+# ╟─fe38687e-bf62-495f-a505-c5c3541c9444
+# ╟─ade21289-01f6-4660-87af-9a842499698f
+# ╟─d37579b5-71f3-4a32-9396-2cf524b3b7b1
+# ╟─88f86ae7-c0c5-4224-b1da-e7e8fc3ecc6a
+# ╟─47081741-e80b-4ebc-a746-f41c7e673b75
+# ╟─53765982-029f-4a3e-a7a3-2b0b565b0416
+# ╟─aa6dc6b6-7e47-4ab5-8d56-7c22fe8c6e04
+# ╟─76890865-422c-4b07-ad1b-dcb9c34e2159
+# ╟─386cea5a-4136-42b0-a85a-52efd1233007
+# ╟─bdb7140f-d570-4eb4-95da-8ee886c4f502
+# ╟─dd0f052b-3843-440f-a610-51d3d9959d68
+# ╟─16399c8c-753b-4841-925b-bad5ab1b46ab
+# ╟─8f683009-c2d1-47dc-b9b0-9575cccf14b7
+# ╟─97cd2fea-2bd1-41ae-a243-e1fb0b3121e9
+# ╟─a8af1243-e839-4223-a0fe-2c5bb65761e1
+# ╟─8a2e443e-538e-4051-9559-0255b1e15a28
+# ╟─61ed66b6-5efc-44da-a72c-ce767d2ea8f7
 # ╟─8cf93a7e-5e34-47bf-ba49-55305661a7da
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
