@@ -626,6 +626,9 @@ md"""
 Para poder contar con un mecanismo para cuantificar el grado de incertidumbre del coeficiente estimado. 
 """
 
+# ╔═╡ 991bafd0-685b-49de-82ca-3ee9a787a7f7
+
+
 # ╔═╡ 8cf93a7e-5e34-47bf-ba49-55305661a7da
 md"""
 ## Regresión lineal[2]
@@ -637,6 +640,9 @@ md"""
 [2]: Murphy, K. P. (2022). Probabilistic machine learning: an introduction. MIT press.
 
 """
+
+# ╔═╡ eb4e6bff-158c-4100-8f72-c5f48533b101
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1967,6 +1973,8 @@ version = "1.4.1+1"
 # ╟─a8af1243-e839-4223-a0fe-2c5bb65761e1
 # ╟─8a2e443e-538e-4051-9559-0255b1e15a28
 # ╟─61ed66b6-5efc-44da-a72c-ce767d2ea8f7
+# ╠═991bafd0-685b-49de-82ca-3ee9a787a7f7
 # ╟─8cf93a7e-5e34-47bf-ba49-55305661a7da
+# ╠═eb4e6bff-158c-4100-8f72-c5f48533b101
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
