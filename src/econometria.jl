@@ -524,7 +524,7 @@ warning_box(md"Esta es una **explicación estadística**. Esta **no** es una exp
 
 # ╔═╡ 47081741-e80b-4ebc-a746-f41c7e673b75
 md"""
-## Consideraciones del modelo de Regresión Lineal Univariado
+## Consideraciones del modelo de Regresión Lineal Univariado [2]
 
 * Fácil interpretación de los coeficientes. Por ejemplo, el incremento en una unidad en $x$ está asociado con un incremento en $\beta_1$ veces en $y$.
 * Si usamos observaciones de las variables predictoras en la regresión estimada, obtenemos una predicción $\hat{y}$. Esta es la parte de $y$ que es explicada por la regresión. La diferencia entre $y$ y $\hat{y}$ corresponde a la parte no explicada por la regresión, y se le denomina el **residual** $\varepsilon$.
@@ -539,7 +539,7 @@ md"""
 ```math
 y = \beta_0 + \beta_1 x + \beta_2 x^2
 ```
-
+[1]: Huntington-Klein, N. (2021). The effect: An introduction to research design and causality. Chapman and Hall/CRC.
 """
 
 # ╔═╡ 53765982-029f-4a3e-a7a3-2b0b565b0416
@@ -643,7 +643,7 @@ con media $\beta_1$ (*i.e* media en el parámetro poblacional) y desviación est
 
 # ╔═╡ 61ed66b6-5efc-44da-a72c-ce767d2ea8f7
 md"""
-# Pruebas de Hipótesis
+# Pruebas de Hipótesis[3]
 
 * Cuando decidimos si un modelo es un buen descriptor de nuestros datos o no lo es, siempre es útil preguntarnos **¿con respecto a qué?**
 * Para formalizar esta pregunta, supongamos que tenemos 2 hipótesis: una **hipótesis nula** $H_0$ y una **hipótesis alternativa** $H_1$.
@@ -659,6 +659,9 @@ md"""
 ```
 * Si consideramos que la $H_1$ es más probable que $H_0$, es decir, **rechazamos** la $H_0$, podemos decir que *hay evidencia para pensar que es poco probable que el valor del coeficiente* sea $0$.
 * La poca probabilidad que el valor del coeficiente sea $0$, significa que hay **alguna** relación entre la variables explicativa y la variable de respuesta.
+
+[3]: Murphy, K. P. (2022). Probabilistic machine learning: an introduction. MIT press.
+
 """
 
 # ╔═╡ 991bafd0-685b-49de-82ca-3ee9a787a7f7
@@ -728,7 +731,7 @@ md"""
 tip(md"
 * Los estadísticos que se encuentran debajo de la información de los coeficientes de regresión nos da indicios de la *calidad del modelo*.
 * El estadístico $R^2$ indica el porcentaje de variación explicado por nuestro modelo, mientras que $R^2$ Adj es $R^2$ pero penalizando por la cantidad de regresoras.
-* El estadístico $F$ es una prueba de significancia conjunta.
+* El estadístico $F$ es una prueba de significancia conjunta para contrastar si, en conjunto, todos los coeficientes de regresión estimados son distintos de $0$.
 ")
 
 # ╔═╡ 49b37f2a-d8d9-4ed4-bd1f-7426e051d982
@@ -811,6 +814,29 @@ md"""
 """
 
 # ╔═╡ 44ae93d1-56be-4526-ac2c-f0abc2220b67
+begin
+	polinomios_url = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/statisticaladjustment-parabolic-1.png";
+	polinomios_path = "images/statisticaladjustment-parabolic-1.png";
+	RobustLocalResource(polinomios_url,polinomios_path)
+end
+
+# ╔═╡ 3c581ed0-a1e1-46bc-abd9-163a94be0574
+md"""
+# Polinomios : ¿Qué ocurre si una línea recta no es suficiente?
+
+* Dos opciones : agregar **términos polinomiales** o **transformar variables**.
+* Un **polinomio** es cuando agregamos a una misma variable a la ecuación de regresión pero elevada a alguna potencia.
+* La siguiente ecuación corresponde a un polinomio de orden 3
+
+```math
+Y = \beta_0 + \beta_1 X +\beta_2 X^2 +\beta_3 X^3
+```
+
+* La siguiente figura presenta el ajuste para regresiones de polinomios de orden 1,2 y 3.
+
+"""
+
+# ╔═╡ cb6e1fc3-25d5-415f-8378-dd58ef285e15
 
 
 # ╔═╡ 8cf93a7e-5e34-47bf-ba49-55305661a7da
@@ -2344,8 +2370,10 @@ version = "1.4.1+1"
 # ╟─864a3d5c-7711-4c65-9eeb-5aaa87bf0ced
 # ╟─2f649993-9851-41a2-ae0c-65bfa8fae9e3
 # ╟─42a20044-2e9b-42d9-bea5-5088c1feca49
-# ╠═14afc93a-b477-466b-9766-f38ca7cc1864
-# ╠═44ae93d1-56be-4526-ac2c-f0abc2220b67
+# ╟─14afc93a-b477-466b-9766-f38ca7cc1864
+# ╟─44ae93d1-56be-4526-ac2c-f0abc2220b67
+# ╟─3c581ed0-a1e1-46bc-abd9-163a94be0574
+# ╠═cb6e1fc3-25d5-415f-8378-dd58ef285e15
 # ╟─8cf93a7e-5e34-47bf-ba49-55305661a7da
 # ╠═eb4e6bff-158c-4100-8f72-c5f48533b101
 # ╟─00000000-0000-0000-0000-000000000001
