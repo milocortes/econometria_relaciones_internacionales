@@ -36,6 +36,44 @@ begin
 	
 end
 
+# ╔═╡ 20dc3559-06d3-4ea3-981b-5af190d4a8aa
+begin
+	using RegressionTables, DataFrames, CSV,Downloads
+	
+	### Cargamos los datos
+	url_data = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/datos/restaurant_inspections.csv"
+	
+	res = DataFrame(CSV.File(Downloads.download(url_data)))
+
+end
+
+# ╔═╡ 3d49ec55-6329-47ce-a9ed-d09a390a3ade
+begin
+	using GLM,FixedEffectModels
+
+	## Definimos la cantidad de asteriscos a qué nivel de significancia corresponde
+	RegressionTables.default_breaks(render::AbstractRenderType) = [0.01, 0.05, 0.1]
+
+	## Primera regresión
+	rr1 = reg(res, @formula(inspection_score ~ NumberofLocations ));
+
+	## Segunda regresión
+	rr2 = reg(res, @formula(inspection_score ~ NumberofLocations + Year));
+
+	## Construimos tabla de regresión
+	regtable(
+	    rr1,rr2;
+	    render = AsciiTable(),
+	    regression_statistics = [
+	        Nobs => "Obs.",
+	        R2, 
+			FStat, 
+			AdjR2,],
+		below_statistic = ConfInt, confint_level=0.95
+	)
+
+end
+
 # ╔═╡ 47b370ee-be85-4ec9-91b6-7c6d71890d30
 html"<button onclick='present()'>present</button>"
 
@@ -623,15 +661,9 @@ md"""
 * La poca probabilidad que el valor del coeficiente sea $0$, significa que hay **alguna** relación entre la variables explicativa y la variable de respuesta.
 """
 
-# ╔═╡ 562ded59-2526-4910-af5c-59fb0746d00a
-aside(tip(md"
-* Podemos pensar el *inesperadamente más grande* como que el valor estimado de $\beta_1$ se encuentra *muy alejado* al valor propuesto en $H_0$ ($\beta_1=0$)
-* La significancia estadística estadística **solo** proporciona información acerca si el valor propuesto en la hipótesis nula $H_0$ es **improbable**. No dice nada acerca si el valor estimado **importa**. 
-"),v_offset=100)
-
 # ╔═╡ 991bafd0-685b-49de-82ca-3ee9a787a7f7
 md"""
-## Pruebas de Hipótesis
+# Pruebas de Hipótesis
 
 * Si el valor estimado de $\hat{\beta}_1$ *es inesperadamente más grande* al valor propuesto en $H_0$ ($\beta_1=0$), rechazamos $H_0$.
 * Es decir, la probabilidad de observar el valor estimado de $\hat{\beta}_1$ es muy baja dado el valor de $\beta_1$ en $H_0$
@@ -641,6 +673,12 @@ md"""
 * Cuando al aplicar la prueba estadística a nuestro estimador $\hat{\beta_1}$ se rechaza la $H_0$, decimos que el estimador tiene **significancia estadística**.
 """
 
+# ╔═╡ 8845655e-ed80-4831-9058-1aeb5d06b677
+tip(md"
+* Podemos pensar el *inesperadamente más grande* como que el valor estimado de $\beta_1$ se encuentra *muy alejado* al valor propuesto en $H_0$ ($\beta_1=0$)
+* La significancia estadística estadística **solo** proporciona información acerca si el valor propuesto en la hipótesis nula $H_0$ es **improbable**. No dice nada acerca si el valor estimado **importa**. 
+")
+
 # ╔═╡ 08a964d2-720d-46d1-9f27-308d42fbb689
 md"""
 ## Regresión lineal en la práctica
@@ -649,10 +687,130 @@ md"""
 
 * Para responder a la pregunta, usaremos los datos de [Louis-Ashley Camus](https://www.kaggle.com/datasets/loulouashley/inspection-score-restaurant-inspection) sobre inspecciones en restaurantes en USA. 
 * Los datos tienen información del puntaje de inspección (máximo puntaje es 100), el año de la inspección, y el número de sucursales de la cadena de restaurantes. 
+* La siguiente tabla presenta los datos:
+"""
+
+# ╔═╡ c91042ac-dd25-4c08-a929-96cb30e728b7
+md"""
+## Regresión lineal en la práctica
+
 * La siguiente tabla presenta algunos estadísticos descriptivos:
 """
 
-# ╔═╡ 20dc3559-06d3-4ea3-981b-5af190d4a8aa
+# ╔═╡ 0c3ee531-a35a-4527-9ad3-99adf400a13d
+describe(res, :all, cols=[:inspection_score, :NumberofLocations])
+
+# ╔═╡ f7af0db0-41f1-44cf-97d9-9e75bbf349dd
+md"""
+## Regresión lineal en la práctica
+
+* Para la primera regresión definimos como **variable de respuesta o dependiente** al *puntaje de inspección* y como **variable independiente-explicativa-regresora** la cantidad de sucursales:
+
+```math
+\text{InspectionScore} = \beta_0 + \beta_1 \text{NumberofLocations} + \varepsilon
+```
+
+Realizaremos una segunda regresión a la cual agregaremos el año de inspección:
+
+```math
+\text{InspectionScore} = \beta_0 + \beta_1 \text{NumberofLocations}+ \beta_2 \text{YearofInspection}+ \varepsilon
+```
+
+"""
+
+# ╔═╡ f0469829-6c50-4746-81e0-210264fcf745
+md"""
+## Regresión lineal en la práctica
+
+"""
+
+# ╔═╡ 0283d185-42a2-4383-89be-bdfd0a6eb6a2
+tip(md"
+* Los estadísticos que se encuentran debajo de la información de los coeficientes de regresión nos da indicios de la *calidad del modelo*.
+* El estadístico $R^2$ indica el porcentaje de variación explicado por nuestro modelo, mientras que $R^2$ Adj es $R^2$ pero penalizando por la cantidad de regresoras.
+* El estadístico $F$ es una prueba de significancia conjunta.
+")
+
+# ╔═╡ 49b37f2a-d8d9-4ed4-bd1f-7426e051d982
+md"""
+## Subíndices en las ecuaciones de regresión
+
+Cuando se escriben ecuaciones de regresión, normalmente se utilizan **subíndices** en las variables que indican las unidades de variación en tiempo e individuos.
+
+Una regresión puede ser expresada como:
+
+```math
+Y_i = \beta_0 + \beta_1 X_i +  \varepsilon_i
+```
+
+donde $i$ nos dice en qué índice varían los datos. Es decir, ¿qué son nuestras observaciones? Generalmente $i$ hace referencia a la variación en **individuos** (personas, municipios, países, empresas, etc). En este tipo de especificación de la ecuación de regresión, $Y$ y $X$ difieren entre individuos.
+
+"""
+
+# ╔═╡ 6e672193-3947-40ce-a661-2037d19c2941
+md"""
+## Subíndices en las ecuaciones de regresión
+
+Podemos tener variación **temporal** con la siguiente especificación:
+
+```math
+Y_t = \beta_0 + \beta_1 X_{t-1} +  \varepsilon_t
+```
+donde el subíndice $t$ corresponde al tiempo. Esta especificación describe una regresión donde cada observación corresponde a un periodo de tiempo distinto. La variable $X_{t-1}$ indica que estamos relacionando Y con un periodo de tiempo rezagado en una unidad temporal.
+
+"""
+
+# ╔═╡ 864a3d5c-7711-4c65-9eeb-5aaa87bf0ced
+md"""
+## Subíndices en las ecuaciones de regresión
+
+Cuando utilizamos tanto variación temporal como entre individuo, la especificación de regresión se le conoce como **panel** o **longitudinal**:
+
+```math
+Y_{it} = \beta_g + \beta_t+ \beta_1 X_{it} + \beta_2 W_{i} + \varepsilon_{it}
+```
+esta especificación describe una regresión en que $Y$ y $X$ varían tanto entre individuos $i$ como en el tiempo $t$. Hay un intercepto para cada periodo de tiempo $\beta_t$ así como también para cada agrupación de individuos $g$. La variable $W_i$ indica que sus observaciones sólo varían entre individuos y no cambian con el tiempo.
+
+"""
+
+# ╔═╡ 2f649993-9851-41a2-ae0c-65bfa8fae9e3
+md"""
+## Regresoras discretas
+
+* Una variable discreta es aquella que tiene un conjunto finito de posibles valores.
+* Una variable binaria es un ejemplo (Mujer-Hombre, Casado-Soltero).
+* Estas variables pueden ser incluidas en la regresión.
+* Para las regresiones del puntaje de inspección, para la regresión 3 y 4, en promedio, el puntaje es 1.49 y 1.43 más alto cuando la inspección se hace en fin de semana que cuando se hace entre semana.
+"""
+
+# ╔═╡ 42a20044-2e9b-42d9-bea5-5088c1feca49
+begin
+	## Tercera regresión con variable binaria
+	rr3 = reg(res, @formula(inspection_score ~ NumberofLocations + Weekend));
+
+	## Segunda regresión
+	rr4 = reg(res, @formula(inspection_score ~ NumberofLocations + Year+ Weekend));
+
+	## Construimos tabla de regresión
+	regtable(
+	    rr1, rr2,rr3,rr4;
+	    render = AsciiTable(),
+	    regression_statistics = [
+	        Nobs => "Obs.",
+	        R2, 
+			FStat, 
+			AdjR2,],
+		below_statistic = ConfInt, confint_level=0.95
+	)
+
+end
+
+# ╔═╡ 14afc93a-b477-466b-9766-f38ca7cc1864
+md"""
+# Polinomios : ¿Qué ocurre si una línea recta no es suficiente?
+"""
+
+# ╔═╡ 44ae93d1-56be-4526-ac2c-f0abc2220b67
 
 
 # ╔═╡ 8cf93a7e-5e34-47bf-ba49-55305661a7da
@@ -673,17 +831,28 @@ md"""
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+FixedEffectModels = "9d5cd8c9-2029-5cab-9928-427838db53e3"
+GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+RegressionTables = "d519eb52-b820-54da-95a6-98e1306fdade"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
+CSV = "~0.10.14"
+DataFrames = "~1.6.1"
 Distributions = "~0.25.108"
+FixedEffectModels = "~1.11.0"
+GLM = "~1.9.0"
 Plots = "~1.40.4"
 PlutoTeachingTools = "~0.2.15"
 PlutoUI = "~0.7.59"
+RegressionTables = "~0.7.5"
 StatsBase = "~0.34.3"
 """
 
@@ -693,7 +862,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "ba4d9690142d8ed9785e7912f6b1c876e81e8ad1"
+project_hash = "b379786a5f982a204f3d63e6cdeab391f4a0ce5d"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -727,6 +896,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "9e2a6b69137e6969bab0152632dcb3bc108c8bdd"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.8+1"
+
+[[deps.CSV]]
+deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
+git-tree-sha1 = "6c834533dc1fabd820c1db03c839bf97e45a3fab"
+uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+version = "0.10.14"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -780,6 +955,11 @@ git-tree-sha1 = "362a287c3aa50601b0bc359053d5c2468f0e7ce0"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.11"
 
+[[deps.Combinatorics]]
+git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
+uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+version = "1.0.2"
+
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
 git-tree-sha1 = "b1c55339b7c6c350ee89f2c1604299660525b248"
@@ -806,16 +986,32 @@ git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.3"
 
+[[deps.Crayons]]
+git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
+uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
+version = "4.1.1"
+
 [[deps.DataAPI]]
 git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.16.0"
+
+[[deps.DataFrames]]
+deps = ["Compat", "DataAPI", "DataStructures", "Future", "InlineStrings", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrecompileTools", "PrettyTables", "Printf", "REPL", "Random", "Reexport", "SentinelArrays", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
+git-tree-sha1 = "04c738083f29f86e62c8afc341f0967d8717bdb8"
+uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+version = "1.6.1"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
 git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 version = "0.18.20"
+
+[[deps.DataValueInterfaces]]
+git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
+uuid = "e2d170a0-9d28-54be-80f0-106bbe20a464"
+version = "1.0.0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -894,6 +1090,12 @@ git-tree-sha1 = "466d45dc38e15794ec7d5d63ec03d776a9aff36e"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
 version = "4.4.4+1"
 
+[[deps.FilePathsBase]]
+deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
+git-tree-sha1 = "9f00e42f8d99fdde64d40c8ea5d14269a2e2c1aa"
+uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
+version = "0.9.21"
+
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
@@ -908,6 +1110,26 @@ weakdeps = ["PDMats", "SparseArrays", "Statistics"]
     FillArraysPDMatsExt = "PDMats"
     FillArraysSparseArraysExt = "SparseArrays"
     FillArraysStatisticsExt = "Statistics"
+
+[[deps.FixedEffectModels]]
+deps = ["DataFrames", "FixedEffects", "LinearAlgebra", "PrecompileTools", "Printf", "Reexport", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels", "Tables", "Vcov"]
+git-tree-sha1 = "8659900a184c342a61c12508c875e9ad4a123777"
+uuid = "9d5cd8c9-2029-5cab-9928-427838db53e3"
+version = "1.11.0"
+
+[[deps.FixedEffects]]
+deps = ["GroupedArrays", "LinearAlgebra", "Printf", "StatsBase"]
+git-tree-sha1 = "436cf51653852db97457d020c4e787453e93d732"
+uuid = "c8885935-8500-56a7-9867-7708b20db0eb"
+version = "2.4.0"
+
+    [deps.FixedEffects.extensions]
+    CUDAExt = "CUDA"
+    MetalExt = "Metal"
+
+    [deps.FixedEffects.weakdeps]
+    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+    Metal = "dde4c033-4e86-420c-a63e-0dd931031962"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -938,11 +1160,21 @@ git-tree-sha1 = "1ed150b39aebcc805c26b93a8d0122c940f64ce2"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
 version = "1.0.14+0"
 
+[[deps.Future]]
+deps = ["Random"]
+uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
+
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll"]
 git-tree-sha1 = "ff38ba61beff76b8f4acad8ab0c97ef73bb670cb"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.3.9+0"
+
+[[deps.GLM]]
+deps = ["Distributions", "LinearAlgebra", "Printf", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels"]
+git-tree-sha1 = "273bd1cd30768a2fddfa3fd63bbc746ed7249e5f"
+uuid = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+version = "1.9.0"
 
 [[deps.GR]]
 deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Preferences", "Printf", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "p7zip_jll"]
@@ -978,6 +1210,12 @@ version = "1.3.14+0"
 git-tree-sha1 = "53bb909d1151e57e2484c3d1b53e19552b887fb2"
 uuid = "42e2da0e-8278-4e71-bc24-59509adca0fe"
 version = "1.0.2"
+
+[[deps.GroupedArrays]]
+deps = ["DataAPI", "Missings"]
+git-tree-sha1 = "44c812379b629eea08b6d25a196010f1f4b001e3"
+uuid = "6407cd72-fade-4a84-8a1e-56e431fc1533"
+version = "0.3.3"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
@@ -1015,14 +1253,30 @@ git-tree-sha1 = "8b72179abc660bfab5e28472e019392b97d0985c"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
 version = "0.2.4"
 
+[[deps.InlineStrings]]
+deps = ["Parsers"]
+git-tree-sha1 = "9cc2baf75c6d09f9da536ddf58eb2f29dedaf461"
+uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
+version = "1.4.0"
+
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
+
+[[deps.InvertedIndices]]
+git-tree-sha1 = "0dc7b50b8d436461be01300fd8cd45aa0274b038"
+uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
+version = "1.3.0"
 
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.2"
+
+[[deps.IteratorInterfaceExtensions]]
+git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
+uuid = "82899510-4779-5014-852e-03e436cf321d"
+version = "1.0.0"
 
 [[deps.JLFzf]]
 deps = ["Pipe", "REPL", "Random", "fzf_jll"]
@@ -1390,6 +1644,12 @@ git-tree-sha1 = "ab55ee1510ad2af0ff674dbcced5e94921f867a9"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.59"
 
+[[deps.PooledArrays]]
+deps = ["DataAPI", "Future"]
+git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
+uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
+version = "1.4.3"
+
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
 git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
@@ -1401,6 +1661,12 @@ deps = ["TOML"]
 git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.4.3"
+
+[[deps.PrettyTables]]
+deps = ["Crayons", "LaTeXStrings", "Markdown", "PrecompileTools", "Printf", "Reexport", "StringManipulation", "Tables"]
+git-tree-sha1 = "88b895d13d53b5577fd53379d913b9ab9ac82660"
+uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+version = "2.3.1"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -1448,6 +1714,24 @@ git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "1.2.2"
 
+[[deps.RegressionTables]]
+deps = ["Distributions", "Format", "Statistics", "StatsAPI", "StatsBase", "StatsModels"]
+git-tree-sha1 = "d56eb439b460b65446bf0d6275a4abb3ebe5b552"
+uuid = "d519eb52-b820-54da-95a6-98e1306fdade"
+version = "0.7.5"
+
+    [deps.RegressionTables.extensions]
+    RegressionTablesFixedEffectModelsExt = "FixedEffectModels"
+    RegressionTablesGLFixedEffectModelsExt = "GLFixedEffectModels"
+    RegressionTablesGLMExt = "GLM"
+    RegressionTablesMixedModelsExt = "MixedModels"
+
+    [deps.RegressionTables.weakdeps]
+    FixedEffectModels = "9d5cd8c9-2029-5cab-9928-427838db53e3"
+    GLFixedEffectModels = "bafb0ae5-e5f5-5100-81b6-6a55d777c812"
+    GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+    MixedModels = "ff71e718-51f3-5ec2-a782-8ffcbfa3c316"
+
 [[deps.RelocatableFolders]]
 deps = ["SHA", "Scratch"]
 git-tree-sha1 = "ffdaf70d81cf6ff22c2b6e733c900c3321cab864"
@@ -1488,8 +1772,19 @@ git-tree-sha1 = "3bac05bc7e74a75fd9cba4295cde4045d9fe2386"
 uuid = "6c6a2e73-6563-6170-7368-637461726353"
 version = "1.2.1"
 
+[[deps.SentinelArrays]]
+deps = ["Dates", "Random"]
+git-tree-sha1 = "363c4e82b66be7b9f7c7c7da7478fdae07de44b9"
+uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
+version = "1.4.2"
+
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+
+[[deps.ShiftedArrays]]
+git-tree-sha1 = "503688b59397b3307443af35cd953a13e8005c16"
+uuid = "1277b4bf-5013-50f5-be3d-901d8477a67a"
+version = "2.0.0"
 
 [[deps.Showoff]]
 deps = ["Dates", "Grisu"]
@@ -1558,6 +1853,18 @@ version = "1.3.1"
     ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
     InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
+[[deps.StatsModels]]
+deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Printf", "REPL", "ShiftedArrays", "SparseArrays", "StatsAPI", "StatsBase", "StatsFuns", "Tables"]
+git-tree-sha1 = "5cf6c4583533ee38639f73b880f35fc85f2941e0"
+uuid = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
+version = "0.7.3"
+
+[[deps.StringManipulation]]
+deps = ["PrecompileTools"]
+git-tree-sha1 = "a04cabe79c5f01f4d723cc6704070ada0b9d46d5"
+uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
+version = "0.3.4"
+
 [[deps.SuiteSparse]]
 deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
@@ -1571,6 +1878,18 @@ version = "5.10.1+6"
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
+
+[[deps.TableTraits]]
+deps = ["IteratorInterfaceExtensions"]
+git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
+uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
+version = "1.0.1"
+
+[[deps.Tables]]
+deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "OrderedCollections", "TableTraits"]
+git-tree-sha1 = "cb76cf677714c095e535e3501ac7954732aeea2d"
+uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+version = "1.11.1"
 
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
@@ -1644,6 +1963,12 @@ git-tree-sha1 = "ca0969166a028236229f63514992fc073799bb78"
 uuid = "41fe7b60-77ed-43a1-b4f0-825fd5a5650d"
 version = "0.2.0"
 
+[[deps.Vcov]]
+deps = ["Combinatorics", "GroupedArrays", "LinearAlgebra", "StatsAPI", "StatsBase", "Tables"]
+git-tree-sha1 = "22491492d601448b0fef54afe8a5bdfd67282965"
+uuid = "ec2bfdc2-55df-4fc9-b9ae-4958c2cf2486"
+version = "0.8.1"
+
 [[deps.Vulkan_Loader_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Wayland_jll", "Xorg_libX11_jll", "Xorg_libXrandr_jll", "xkbcommon_jll"]
 git-tree-sha1 = "2f0486047a07670caad3a81a075d2e518acc5c59"
@@ -1661,6 +1986,17 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "93f43ab61b16ddfb2fd3bb13b3ce241cafb0e6c9"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.31.0+0"
+
+[[deps.WeakRefStrings]]
+deps = ["DataAPI", "InlineStrings", "Parsers"]
+git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
+uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
+version = "1.4.2"
+
+[[deps.WorkerUtilities]]
+git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
+uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
+version = "1.6.1"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
@@ -1993,10 +2329,23 @@ version = "1.4.1+1"
 # ╟─a8af1243-e839-4223-a0fe-2c5bb65761e1
 # ╟─8a2e443e-538e-4051-9559-0255b1e15a28
 # ╟─61ed66b6-5efc-44da-a72c-ce767d2ea8f7
-# ╟─562ded59-2526-4910-af5c-59fb0746d00a
 # ╟─991bafd0-685b-49de-82ca-3ee9a787a7f7
+# ╟─8845655e-ed80-4831-9058-1aeb5d06b677
 # ╟─08a964d2-720d-46d1-9f27-308d42fbb689
-# ╠═20dc3559-06d3-4ea3-981b-5af190d4a8aa
+# ╟─20dc3559-06d3-4ea3-981b-5af190d4a8aa
+# ╟─c91042ac-dd25-4c08-a929-96cb30e728b7
+# ╟─0c3ee531-a35a-4527-9ad3-99adf400a13d
+# ╟─f7af0db0-41f1-44cf-97d9-9e75bbf349dd
+# ╟─f0469829-6c50-4746-81e0-210264fcf745
+# ╟─3d49ec55-6329-47ce-a9ed-d09a390a3ade
+# ╟─0283d185-42a2-4383-89be-bdfd0a6eb6a2
+# ╟─49b37f2a-d8d9-4ed4-bd1f-7426e051d982
+# ╟─6e672193-3947-40ce-a661-2037d19c2941
+# ╟─864a3d5c-7711-4c65-9eeb-5aaa87bf0ced
+# ╟─2f649993-9851-41a2-ae0c-65bfa8fae9e3
+# ╟─42a20044-2e9b-42d9-bea5-5088c1feca49
+# ╠═14afc93a-b477-466b-9766-f38ca7cc1864
+# ╠═44ae93d1-56be-4526-ac2c-f0abc2220b67
 # ╟─8cf93a7e-5e34-47bf-ba49-55305661a7da
 # ╠═eb4e6bff-158c-4100-8f72-c5f48533b101
 # ╟─00000000-0000-0000-0000-000000000001
