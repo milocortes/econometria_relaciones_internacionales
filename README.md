@@ -19,7 +19,7 @@ Copia y pega la siguiente dirección en el sitio anterior:
 ```
 https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/econometria.jl
 ```
-![](src/images/pega.png)
+![](src/images/binder_pega.png)
 
 
 Abre la ruta que se genera en el sitio de binder
