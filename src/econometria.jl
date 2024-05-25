@@ -673,6 +673,14 @@ tip(md"
 * La significancia estadística estadística **solo** proporciona información acerca si el valor propuesto en la hipótesis nula $H_0$ es **improbable**. No dice nada acerca si el valor estimado **importa**. 
 ")
 
+# ╔═╡ db050ee3-5b68-478c-ae89-d3d1c699255f
+md"""
+# Pruebas de Hipótesis
+"""
+
+# ╔═╡ bf656aae-854c-49a1-8a3c-cc037d5e995c
+
+
 # ╔═╡ 08a964d2-720d-46d1-9f27-308d42fbb689
 md"""
 ## Regresión lineal en la práctica
@@ -1198,8 +1206,8 @@ md"""
 Con el objetivo de ofrecer evidencia empírica sobre la trayectoria de dependencia de la evolución industrial para el conjunto de Zonas Metropolitanas y El Salvador, se estimaron regresiones para tres variables explicaticas:
 
 * **Crecimiento del RCA** : variable continua igual a la inversa hiperbólica de la tasa de crecimiento del RCA entre 2015 y 2020. 
-* **Aparición de industrias**:  variable dicotómica que toma la etiqueta 1 si la industria tenía un RCA < 0.05 en 2015 y un RCA > 0.2 en 2020. En caso contrario, se asigna la etiqueta 0. La variable indica si la actividad se especializó en el periodo.
-* **Desaparición de industrias** : variable dicotómica que toma la etiqueta 1 si la industria tenía un RCA < 0.2 en 2015 y un RCA > 0.05 en 2020. En caso contrario, se asigna la etiqueta 0. La variable indica si la actividad perdió especialización en el periodo.
+* **Aparición de industrias**:  variable dicotómica que toma la etiqueta $1$ si la industria tenía un $\text{RCA} < 0.05$ en 2015 y un $\text{RCA} > 0.2$ en 2020. En caso contrario, se asigna la etiqueta $0$. La variable indica si la actividad se especializó en el periodo.
+* **Desaparición de industrias** : variable dicotómica que toma la etiqueta $1$ si la industria tenía un $\text{RCA} < 0.2$ en 2015 y un $\text{RCA} > 0.05$ en 2020. En caso contrario, se asigna la etiqueta $0$. La variable indica si la actividad perdió especialización en el periodo.
 
 Las regresiones toman la siguiente forma funcional:
 
@@ -1228,7 +1236,7 @@ md"""
 # ╔═╡ f8a59832-82ea-4a43-8b5f-38bbf94f647e
 begin
 	### Cargamos los datos
-	rca_data = "https://raw.githubusercontent.com/milocortes/InvESt_complexity/main/src/regresiones_crecimiento.csv"
+	rca_data = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/datos/regresiones_crecimiento.csv"
 	
 	complexity_zm = DataFrame(CSV.File(Downloads.download(rca_data)));nothing
 	
@@ -1280,6 +1288,7 @@ begin
 	        "arcsinh_input_presence" => "Input Presence",
 	        "arcsinh_coempleo_presence_continua" => "Co-empleo",
 	        "arcsinh_input_presence_similarity" => "Input Presence Similarity",
+			"arcsinh_output_presence_similarity" => "Output Presence Similarity",
 	        "growth_rca_arcsinh" => "Crecimiento RCA"
 	    ),
 	    regression_statistics = [
@@ -1289,6 +1298,147 @@ begin
 	        PseudoR2 => "Pseudo-R2",
 	    ]
 	)
+end
+
+# ╔═╡ e5d113b0-3d8e-458b-96a9-0fa93b079c43
+md"""
+## Aparición de industrias
+"""
+
+# ╔═╡ e65d4f1e-4d90-463c-b5cf-b49a2b140af9
+begin
+	
+	### Apariciones
+	
+	apariciones_uno = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm),
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca +
+	                    fe(zm) + fe(actividad)))
+	
+	apariciones_dos = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm), 
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_input_presence + 
+	                    fe(zm) + fe(actividad)))
+	
+	apariciones_tres = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm), 
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_input_presence_similarity +
+	                    fe(zm) + fe(actividad)))
+	
+	apariciones_cuatro = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm), 
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence + 
+	                    fe(zm) + fe(actividad)))
+	
+	apariciones_cinco = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm), 
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence_similarity +
+	                    fe(zm) + fe(actividad)))                                        
+	
+	
+	apariciones_seis = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm), 
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca +  arcsinh_coempleo_presence_continua + 
+	                    fe(zm) + fe(actividad)))                                        
+	
+	apariciones_siete = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm), 
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence+ arcsinh_input_presence + arcsinh_coempleo_presence_continua + arcsinh_input_presence_similarity + arcsinh_output_presence_similarity+
+	                    fe(zm) + fe(actividad)))                                        
+	
+	apariciones_ocho = reg(filter(row -> row.rca_2015 < 0.05, complexity_zm), 
+	                    @formula(apariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence+ arcsinh_input_presence  + arcsinh_input_presence_similarity + arcsinh_output_presence_similarity+
+	                    arcsinh_coempleo_calificado_presence + fe(zm) + fe(actividad))) 
+
+	
+	regtable(
+	    apariciones_uno, apariciones_dos, apariciones_tres, apariciones_cuatro, apariciones_cinco, apariciones_seis, apariciones_siete,apariciones_ocho;
+	    render = AsciiTable(),
+	    labels = Dict(
+	        "apariciones" => "Apariciones",
+	        "desapariciones" => "Desapariciones",
+	        "zm" => "Zona Metropolitana",
+	        "actividad" => "Actividad CIIU",
+	        "arcsinh_density"  => "Density",
+	        "arcsinh_rca" => "RCA",
+	        "arcsinh_output_presence" => "Output Presence",
+	        "arcsinh_input_presence" => "Input Presence",
+	        "arcsinh_coempleo_presence_continua" => "Co-empleo",
+	        "arcsinh_input_presence_similarity" => "Input Presence Similarity",
+	        "arcsinh_output_presence_similarity" => "Output Presence Similarity",
+	        "arcsinh_coempleo_calificado_presence"=> "Co-empleo Calificado"
+	    ),
+	    regression_statistics = [
+	        Nobs => "Obs.",
+	        R2,
+	        R2Within,
+	        PseudoR2 => "Pseudo-R2",
+	    ]
+	)
+
+end
+
+# ╔═╡ 893ed990-154e-480c-ac8e-229a86f03aa0
+md"""
+## Desaparición de industrias
+
+"""
+
+# ╔═╡ 7fabd1cb-2cb4-4db9-9664-845810023793
+begin
+	### Desapariciones
+	
+	desapariciones_uno = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm),
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca +
+	                    fe(zm) + fe(actividad)))
+	
+	desapariciones_dos = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm), 
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_input_presence + 
+	                    fe(zm) + fe(actividad)))
+	
+	desapariciones_tres = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm), 
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_input_presence_similarity +
+	                    fe(zm) + fe(actividad)))
+	
+	desapariciones_cuatro = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm), 
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence + 
+	                    fe(zm) + fe(actividad)))
+	
+	desapariciones_cinco = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm), 
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence_similarity +
+	                    fe(zm) + fe(actividad)))                                        
+	
+	
+	desapariciones_seis = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm), 
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca +  arcsinh_coempleo_presence_continua + 
+	                    fe(zm) + fe(actividad)))                                        
+	
+	desapariciones_siete = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm), 
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence+ arcsinh_input_presence + arcsinh_coempleo_presence_continua + arcsinh_input_presence_similarity + arcsinh_output_presence_similarity+
+	                    fe(zm) + fe(actividad)))                                        
+	
+	desapariciones_ocho = reg(filter(row -> row.rca_2015 > 0.2, complexity_zm), 
+	                    @formula(desapariciones ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence+ arcsinh_input_presence + arcsinh_input_presence_similarity + arcsinh_output_presence_similarity+
+	                    arcsinh_coempleo_calificado_presence + fe(zm) + fe(actividad)))   
+	
+	regtable(
+	    desapariciones_uno, desapariciones_dos, desapariciones_tres, desapariciones_cuatro, desapariciones_cinco, desapariciones_seis, desapariciones_siete, desapariciones_ocho;
+	    render = AsciiTable(),
+	    labels = Dict(
+	        "apariciones" => "Apariciones",
+	        "desapariciones" => "Desapariciones",
+	        "zm" => "Zona Metropolitana",
+	        "actividad" => "Actividad CIIU",
+	        "arcsinh_density"  => "Density",
+	        "arcsinh_rca" => "RCA",
+	        "arcsinh_output_presence" => "Output Presence",
+	        "arcsinh_input_presence" => "Input Presence",
+	        "arcsinh_coempleo_presence_continua" => "Co-empleo",
+	        "arcsinh_input_presence_similarity" => "Input Presence Similarity",
+	        "arcsinh_output_presence_similarity" => "Output Presence Similarity",
+	        "arcsinh_coempleo_calificado_presence"=> "Co-empleo Calificado"
+	    ),
+	    regression_statistics = [
+	        Nobs => "Obs.",
+	        R2,
+	        R2Within,
+	        PseudoR2 => "Pseudo-R2",
+	    ]
+	)
+
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2793,6 +2943,8 @@ version = "1.4.1+1"
 # ╟─61ed66b6-5efc-44da-a72c-ce767d2ea8f7
 # ╟─991bafd0-685b-49de-82ca-3ee9a787a7f7
 # ╟─8845655e-ed80-4831-9058-1aeb5d06b677
+# ╟─db050ee3-5b68-478c-ae89-d3d1c699255f
+# ╠═bf656aae-854c-49a1-8a3c-cc037d5e995c
 # ╟─08a964d2-720d-46d1-9f27-308d42fbb689
 # ╟─20dc3559-06d3-4ea3-981b-5af190d4a8aa
 # ╟─c91042ac-dd25-4c08-a929-96cb30e728b7
@@ -2836,6 +2988,10 @@ version = "1.4.1+1"
 # ╟─ffae5438-eb19-4836-bbf4-d316933011a5
 # ╟─6e64acae-9fbc-4552-a15c-c260e9511172
 # ╟─aff3948b-fc30-4626-8947-7678186506ba
-# ╠═f8a59832-82ea-4a43-8b5f-38bbf94f647e
+# ╟─f8a59832-82ea-4a43-8b5f-38bbf94f647e
+# ╟─e5d113b0-3d8e-458b-96a9-0fa93b079c43
+# ╟─e65d4f1e-4d90-463c-b5cf-b49a2b140af9
+# ╟─893ed990-154e-480c-ac8e-229a86f03aa0
+# ╟─7fabd1cb-2cb4-4db9-9664-845810023793
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
