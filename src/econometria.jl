@@ -679,7 +679,11 @@ md"""
 """
 
 # ╔═╡ bf656aae-854c-49a1-8a3c-cc037d5e995c
-
+begin
+	hipotesis_url = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/statisticaladjustment-theoreticaldist-1.png";
+	hipotesis_path = "images/statisticaladjustment-theoreticaldist-1.png";
+	RobustLocalResource(hipotesis_url,hipotesis_path)
+end
 
 # ╔═╡ 08a964d2-720d-46d1-9f27-308d42fbb689
 md"""
@@ -2944,7 +2948,7 @@ version = "1.4.1+1"
 # ╟─991bafd0-685b-49de-82ca-3ee9a787a7f7
 # ╟─8845655e-ed80-4831-9058-1aeb5d06b677
 # ╟─db050ee3-5b68-478c-ae89-d3d1c699255f
-# ╠═bf656aae-854c-49a1-8a3c-cc037d5e995c
+# ╟─bf656aae-854c-49a1-8a3c-cc037d5e995c
 # ╟─08a964d2-720d-46d1-9f27-308d42fbb689
 # ╟─20dc3559-06d3-4ea3-981b-5af190d4a8aa
 # ╟─c91042ac-dd25-4c08-a929-96cb30e728b7
