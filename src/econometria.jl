@@ -411,19 +411,10 @@ Una Distribución Condicional representa la distribución de una variable **dado
 La definición de *Propabilidad Condicional* es
 
 ```math
-P(y|x) = \dfrac{P(y,x)}{P(x)}
+P(y|x) 
 ```
 
-donde $P(y|x)$ se lee como **la probabilidad de $y$ dado $x$**. En algunos contextos se refieren a $y$ como la **evidencia**.
-"""
-
-# ╔═╡ 77d8cadf-875d-4e7c-804b-496e651daee0
-md"""
-## Regla de Bayes
-
-```math
-P(y|x) = \dfrac{P(x|y)P(x)}{P(y)}
-```
+donde $P(y|x)$ se lee como **la probabilidad de $y$ dado $x$**. En algunos contextos se refieren a $x$ como la **evidencia**.
 """
 
 # ╔═╡ bb5238de-73c0-46f2-abef-2c04b741644a
@@ -832,7 +823,7 @@ end
 
 # ╔═╡ 3c581ed0-a1e1-46bc-abd9-163a94be0574
 md"""
-# Polinomios : ¿Qué ocurre si una línea recta no es suficiente?
+## Polinomios : ¿Qué ocurre si una línea recta no es suficiente?
 
 * Dos opciones : agregar **términos polinomiales** o **transformar variables**.
 * Un **polinomio** es cuando agregamos a una misma variable a la ecuación de regresión pero elevada a alguna potencia.
@@ -841,6 +832,12 @@ md"""
 ```math
 Y = \beta_0 + \beta_1 X +\beta_2 X^2 +\beta_3 X^3
 ```
+
+"""
+
+# ╔═╡ 8a5778a8-5aba-4098-b503-e44930bcb203
+md"""
+## Polinomios : ¿Qué ocurre si una línea recta no es suficiente?
 
 * La siguiente figura presenta el ajuste para regresiones de polinomios de orden 1,2 y 3.
 
@@ -929,6 +926,11 @@ tip(md"
 * La transformación de variables reduce la varianza de los datos, además que resuelve problemas de datos atípicos. 
 ")
 
+# ╔═╡ a4f2b176-3fb9-49ff-92de-1c54b9824cd2
+md"""
+## Transformación de Variables
+"""
+
 # ╔═╡ 8be9804d-0620-4fb1-853a-571e120015e8
 begin
 	transformacion_url = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/statisticaladjustment-logoutlier-1.png";
@@ -976,7 +978,7 @@ Y=\beta_0 + \beta_1X + \beta_2Z +\beta_3XZ + \epsilon
 
 # ╔═╡ a10a06c1-7f6d-43d4-8e04-648781e6f5d3
 md"""
-### ¿Cuál es el efecto de una variable $X$ cuándo hay una interacción entre $X$ y otra variable del modelo?
+## ¿Cuál es el efecto de una variable $X$ cuándo hay una interacción entre $X$ y otra variable del modelo?
 
 Si tenemos la regresión
 ```math
@@ -996,7 +998,7 @@ Es decir, no hay un valor único del cambio en $Y$ por $X$, depende de $Z$. De m
 
 # ╔═╡ 11a7742d-aff3-4063-8660-386bdc0e82c9
 md"""
-### ¿Cómo se interpreta el término de interacción?
+## ¿Cómo se interpreta el término de interacción?
 
 * El coeficiente $\beta_3$ nos dice **cuánto más fuerte es el efecto de** $X$ **en** $Y$ **cuando** $Z$ **se incrementa en una unidad**.
 
@@ -1110,17 +1112,39 @@ md"""
 
 # ╔═╡ 1aa5712e-14d7-4f36-bc73-c209775c27ea
 md"""
-## Revolución de credibilidad
+## Revolución de credibilidad: Card, Angrist e Imbens. Nobel 2021.
 
 """
 
 # ╔═╡ fbf04884-492f-41d2-8a1a-a0333c15bab5
 html"""
-<p>Small planet, small picture:</p>
 
-<img src="https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/statisticaladjustment-logoutlier-1.png"
-	width="200"
-	alt="Pluto (dwarf planet)">
+<style>
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 1px;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>
+
+<div class="row">
+  <div class="column">
+    <img src="https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/david_card.png" alt="Snow" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/angrist.jpg" alt="Forest" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/imbens.jpg" alt="Mountains" style="width:100%">
+  </div>
+</div>
 """
 
 # ╔═╡ 19bc68bd-8763-480e-9127-d4faba57216d
@@ -1132,6 +1156,140 @@ md"""
 * Cointegración.
 
 """
+
+# ╔═╡ 4e5c99da-27e7-4a79-84eb-dfc54e4dc61e
+md"""
+## Cointegración: Engle y Granger. Nobel 2003.
+"""
+
+# ╔═╡ ffae5438-eb19-4836-bbf4-d316933011a5
+html"""
+
+<style>
+.column {
+  float: center;
+  width: 33.33%;
+  padding: 1px;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>
+
+<div class="row">
+  <div class="column">
+    <img src="https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/engle.jpeg" alt="Snow" style="width:200%">
+  </div>
+  <div class="column">
+    <img src="https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/granger.jpeg" alt="Forest" style="width:78%">
+  </div>
+
+</div>
+"""
+
+# ╔═╡ 6e64acae-9fbc-4552-a15c-c260e9511172
+md"""
+# Regresiones para Crecimiento del RCA, Apariciones y Desapariciones
+
+Con el objetivo de ofrecer evidencia empírica sobre la trayectoria de dependencia de la evolución industrial para el conjunto de Zonas Metropolitanas y El Salvador, se estimaron regresiones para tres variables explicaticas:
+
+* **Crecimiento del RCA** : variable continua igual a la inversa hiperbólica de la tasa de crecimiento del RCA entre 2015 y 2020. 
+* **Aparición de industrias**:  variable dicotómica que toma la etiqueta 1 si la industria tenía un RCA < 0.05 en 2015 y un RCA > 0.2 en 2020. En caso contrario, se asigna la etiqueta 0. La variable indica si la actividad se especializó en el periodo.
+* **Desaparición de industrias** : variable dicotómica que toma la etiqueta 1 si la industria tenía un RCA < 0.2 en 2015 y un RCA > 0.05 en 2020. En caso contrario, se asigna la etiqueta 0. La variable indica si la actividad perdió especialización en el periodo.
+
+Las regresiones toman la siguiente forma funcional:
+
+```math
+\begin{equation}
+    y_{j,k,t_1} = \alpha_0 + \alpha_1 Densidad_{j,k,t_0} + \alpha_2RCA_{j,k,t_0} + \delta_1 ZM + \delta_2 CIIU+\varepsilon_{j,k,t_1}
+\end{equation}
+```
+
+Donde el subíndice $j$ corresponde a la actividad CIIU, $k$ corresponde a la zona metropolitana, $t_0$ corresponde al año de inicio del periodo de estudio(2015), $t_1$ corresponde al año final del periodo de estudio (2020). La estimación controla por efectos fijos para zonas metropolitanas (ZM) y actividades CIIU (CIIU). 
+
+Para examinar el efecto de las métricas de viabilidad en la trayectoria de evolución industrial, a la forma funcional anterior agregamos como regresores las metricas de viabilidad:
+
+* **Input Presence** : mide la presencia de actividades que producen insumos necesarios para las actividades.
+* **Output Presence** : mide la presencia de actividades que compran productos de las actividades.
+* **Input Presence Similarity** : mide la presencia de actividades que son similares respecto a la demanda de mismos insumos.
+* **Output Presence Similarity** : mide la presencia de actividades similares respecto a si le venden sus producción a las mismas industrias. 
+* **Co-empleo** :  mide la presencia de actividades que demandan los mismos tipos de ocupaciones.
+"""
+
+# ╔═╡ aff3948b-fc30-4626-8947-7678186506ba
+md"""
+## Crecimiento del RCA
+"""
+
+# ╔═╡ f8a59832-82ea-4a43-8b5f-38bbf94f647e
+begin
+	### Cargamos los datos
+	rca_data = "https://raw.githubusercontent.com/milocortes/InvESt_complexity/main/src/regresiones_crecimiento.csv"
+	
+	complexity_zm = DataFrame(CSV.File(Downloads.download(rca_data)));nothing
+	
+	### RCA GROWTH
+	reg_growth_rca_uno = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca +
+	                    fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))
+	
+	reg_growth_rca_dos = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca + arcsinh_input_presence + 
+	                    fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))
+	
+	reg_growth_rca_tres = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca + arcsinh_input_presence_similarity +
+	                    fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))
+	
+	reg_growth_rca_cuatro = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence + 
+	                    fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))
+	
+	reg_growth_rca_cinco = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence_similarity +
+	                    fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))                                        
+	
+	
+	reg_growth_rca_seis = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca +  arcsinh_coempleo_presence_continua + 
+	                    fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))                                        
+	
+	reg_growth_rca_siete = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence+ arcsinh_input_presence + arcsinh_coempleo_presence_continua + arcsinh_input_presence_similarity + arcsinh_output_presence_similarity+
+	                    fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))    
+	
+	reg_growth_rca_ocho = reg(complexity_zm, 
+	                    @formula(growth_rca_arcsinh ~ arcsinh_density  + arcsinh_rca + arcsinh_output_presence+ arcsinh_input_presence + arcsinh_coempleo_presence_continua + arcsinh_input_presence_similarity + arcsinh_output_presence_similarity+
+	                    arcsinh_coempleo_calificado_presence +fe(zm) + fe(actividad)), Vcov.cluster(:zm, :actividad))    
+	
+	regtable(
+	    reg_growth_rca_uno, reg_growth_rca_dos, reg_growth_rca_tres, reg_growth_rca_cuatro, reg_growth_rca_cinco, reg_growth_rca_seis, reg_growth_rca_siete;
+	    render = AsciiTable(),
+	    labels = Dict(
+	        "apariciones" => "Apariciones",
+	        "desapariciones" => "Desapariciones",
+	        "zm" => "Zona Metropolitana",
+	        "actividad" => "Actividad CIIU",
+	        "arcsinh_density"  => "Density",
+	        "arcsinh_rca" => "RCA",
+	        "arcsinh_output_presence" => "Output Presence",
+	        "arcsinh_input_presence" => "Input Presence",
+	        "arcsinh_coempleo_presence_continua" => "Co-empleo",
+	        "arcsinh_input_presence_similarity" => "Input Presence Similarity",
+	        "growth_rca_arcsinh" => "Crecimiento RCA"
+	    ),
+	    regression_statistics = [
+	        Nobs => "Obs.",
+	        R2,
+	        R2Within,
+	        PseudoR2 => "Pseudo-R2",
+	    ]
+	)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2609,7 +2767,6 @@ version = "1.4.1+1"
 # ╟─a643b24c-8935-43a5-9e1a-f2d55b554f48
 # ╟─0066dfcc-2d3c-46b3-b42a-1683937bec3c
 # ╟─0a0aafdb-66df-4a20-aa07-251450d5a5da
-# ╟─77d8cadf-875d-4e7c-804b-496e651daee0
 # ╟─bb5238de-73c0-46f2-abef-2c04b741644a
 # ╟─37b4e17d-759b-424d-adf0-888464af0189
 # ╟─117b4d93-ffa8-46ca-a634-9e271df85cdb
@@ -2652,12 +2809,14 @@ version = "1.4.1+1"
 # ╟─14afc93a-b477-466b-9766-f38ca7cc1864
 # ╟─44ae93d1-56be-4526-ac2c-f0abc2220b67
 # ╟─3c581ed0-a1e1-46bc-abd9-163a94be0574
+# ╟─8a5778a8-5aba-4098-b503-e44930bcb203
 # ╟─cb6e1fc3-25d5-415f-8378-dd58ef285e15
 # ╟─e585be31-ea77-41ce-9f33-ab9db7d30ca1
 # ╟─4fddea51-3370-4315-a4e8-7ef0fbbb143b
 # ╟─1dd12350-3754-4944-954e-2a4d18c27721
 # ╟─eec4842b-e47b-44d7-8d5e-f6e8183ef294
 # ╟─b6a5582e-f687-4b0c-9cb3-6db97656710a
+# ╟─a4f2b176-3fb9-49ff-92de-1c54b9824cd2
 # ╟─8be9804d-0620-4fb1-853a-571e120015e8
 # ╟─47a4b14e-9b5e-4eb6-9212-876321b0c0ba
 # ╟─f47a8af1-6635-4f79-ab7f-c7055f59dc48
@@ -2671,7 +2830,12 @@ version = "1.4.1+1"
 # ╟─3e8430c4-afae-489d-b9ef-d19b1c50207e
 # ╟─55ac4f86-9373-460d-bf06-a91dd95837f9
 # ╟─1aa5712e-14d7-4f36-bc73-c209775c27ea
-# ╠═fbf04884-492f-41d2-8a1a-a0333c15bab5
+# ╟─fbf04884-492f-41d2-8a1a-a0333c15bab5
 # ╟─19bc68bd-8763-480e-9127-d4faba57216d
+# ╟─4e5c99da-27e7-4a79-84eb-dfc54e4dc61e
+# ╟─ffae5438-eb19-4836-bbf4-d316933011a5
+# ╟─6e64acae-9fbc-4552-a15c-c260e9511172
+# ╟─aff3948b-fc30-4626-8947-7678186506ba
+# ╠═f8a59832-82ea-4a43-8b5f-38bbf94f647e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
