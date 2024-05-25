@@ -783,6 +783,16 @@ md"""
 * Una variable discreta es aquella que tiene un conjunto finito de posibles valores.
 * Una variable binaria es un ejemplo (Mujer-Hombre, Casado-Soltero).
 * Estas variables pueden ser incluidas en la regresión.
+* Agregamos la variable binaria Weekend a nuestra regresión 
+```math
+\text{InspectionScore} = \beta_0 + \beta_1 \text{NumberofLocations}+ \beta_2 \text{Weekend}+ \varepsilon
+```
+```math
+\begin{multline}
+\text{InspectionScore} = \beta_0 + \beta_1 \text{NumberofLocations}+ \beta_2 \text{YearofInspection} + \beta_3 \text{Weekend}+ \varepsilon
+\end{multline}
+
+```
 * Para las regresiones del puntaje de inspección, para la regresión 3 y 4, en promedio, el puntaje es 1.49 y 1.43 más alto cuando la inspección se hace en fin de semana que cuando se hace entre semana.
 """
 
@@ -834,25 +844,294 @@ Y = \beta_0 + \beta_1 X +\beta_2 X^2 +\beta_3 X^3
 
 * La siguiente figura presenta el ajuste para regresiones de polinomios de orden 1,2 y 3.
 
+* La línea sólida recta corresponde a $Y = \beta_0 + \beta_1 X$.
+* La línea punteada corresponde a $Y = \beta_0 + \beta_1 X +\beta_2 X^2$
+* La linea sólida curveada corresponde a $Y = \beta_0 + \beta_1 X +\beta_2 X^2 +\beta_3 X^3$
+
 """
 
 # ╔═╡ cb6e1fc3-25d5-415f-8378-dd58ef285e15
+begin
+	ajuste_polinomios_url = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/statisticaladjustment-linearsquarecube-1.png";
+	ajuste_polinomios_path = "images/statisticaladjustment-linearsquarecube-1.png";
+	RobustLocalResource(ajuste_polinomios_url,ajuste_polinomios_path)
+end
 
-
-# ╔═╡ 8cf93a7e-5e34-47bf-ba49-55305661a7da
+# ╔═╡ e585be31-ea77-41ce-9f33-ab9db7d30ca1
 md"""
-## Regresión lineal[2]
+# Polinomios : ¿Por qué no sólo usamos polinimos de orden infinito?
+* Problema : **Sobre ajuste (overfitting)**. El modelo no es capaz de generalizar.
+* Peor: No mejora el desempeño del modelo y sólo lo hace menos interpretable.
+"""
 
-* El método de **Regresión Lineal** es utilizado ampliamente para predecir una **variable dependiente** $y$
+# ╔═╡ 4fddea51-3370-4315-a4e8-7ef0fbbb143b
+md"""
+# Polinomios : Interpretación de coeficientes
+* Para interpretar los coeficientes necesitamos hacer un poco de cálculo.
+* Para mantener la interpretación "manteniendo el resto constante, un incremento en una unidad de $X$ está asociado con un incremento $\Delta$ in $Y$".
+* Para calcular $\Delta$, derivamos la ecuación de regresión $Y = \beta_0 + \beta_1 X +\beta_2 X^2 +\beta_3 X^3$ con respecto a $X$:
+
+```math
+\dfrac{\partial Y}{ \partial X}= \beta_1 + 2\beta_2X + 3\beta_3X^2
+```
+* Un cambio en una unidad de $X$ está asociado con un cambio $\beta_1 + 2\beta_2X + 3\beta_3X^2$ en $Y$.
+* Para nuestro modelo de puntaje de inspección, el incremento en una unidad de sucursales está asociado con un incremento en 
+
+```math
+\beta_1 + \beta_2\text{NumberofLocations}
+
+```
+```math
+
+-0.0801894 + 0.0001168\text{NumberofLocations}
+```
+"""
+
+# ╔═╡ 1dd12350-3754-4944-954e-2a4d18c27721
+begin
+
+	## Agregando polinomios
+	rr5 = reg(res, @formula(inspection_score ~ NumberofLocations + NumberofLocations^2 ));
+
+	## Construimos tabla de regresión
+	regtable(
+	    rr5;
+	    render = AsciiTable(),
+	    regression_statistics = [
+	        Nobs => "Obs.",
+	        R2, 
+			FStat, 
+			AdjR2,],
+		below_statistic = ConfInt, confint_level=0.95, digits = 7
+	)
+
+end
+
+# ╔═╡ eec4842b-e47b-44d7-8d5e-f6e8183ef294
+md"""
+## Transformación de Variables
+
+* Además de los polinomios, podemos aplicar transformaciones a las variables para ajustar formas no lineales.
+* Generalmente la transformación de variables consiste en aplicar una función a las variables antes de usarlas. 
+* El logaritmo natural es una función que se utiliza con frecuencia para transformar variables.
+* Por ejemplo, en vez de utilizar la regresión
+```math
+Y = \beta_0 + \beta_1X + \varepsilon
+```
+* Podemos correr:
+```math
+Y = \beta_0 + \beta_1 \ln{X} + \varepsilon
+```
+"""
+
+# ╔═╡ b6a5582e-f687-4b0c-9cb3-6db97656710a
+tip(md"
+* La transformación de variables reduce la varianza de los datos, además que resuelve problemas de datos atípicos. 
+")
+
+# ╔═╡ 8be9804d-0620-4fb1-853a-571e120015e8
+begin
+	transformacion_url = "https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/statisticaladjustment-logoutlier-1.png";
+	transformacion_path = "images/statisticaladjustment-logoutlier-1.png";
+	RobustLocalResource(transformacion_url,transformacion_path)
+end
+
+# ╔═╡ 47a4b14e-9b5e-4eb6-9212-876321b0c0ba
+md"""
+## Transformación de Variables
+* Podemos aplicar transformaciones a la variable dependiente $Y$.
+* Por ejemplo, si tenemos la siguiente especificación:
+
+```math
+\ln{Y} = \beta_0 + \beta_1 \ln{X} + \varepsilon
+```
+
+Podemos interpretar el coeficiente $\beta_1$ como una **elasticidad** : el incremento en 1% en $X$ representa, en promedio y manteniendo el resto constante, un incremento el $\beta_1$%.
+"""
+
+# ╔═╡ f47a8af1-6635-4f79-ab7f-c7055f59dc48
+md"""
+## Términos de interacción
+* Los polinimios y transformaciones generan relaciones más flexibles entre $Y$ y $X$.
+* Pero puede que la relación entre $Y$ y $X$ difiera no sólo en base al valor de $X$, sino también en base a un valor distinto de una variable $Z$.
+* Por ejemplo, ¿cuál es la relación entre el precio de la gasolina y cuánto elige conducir un individuo? 
+* Para las personas que poseen un automóvil, esa relación puede ser bastante fuerte y negativa. 
+* Para las personas que no poseen un automóvil, esa relación probablemente sea cercana a cero.
+* La relación entre $Y$ y $X$ puede diferir entre grupos.
+* Para modelar este cambio de relación entre grupos usamos **términos de interacción**.
+"""
+
+# ╔═╡ 871e3fe4-e398-4d9a-bd61-23e5dc008545
+md"""
+## Términos de interacción
+* Un término de interacción es cuando multiplicas dos variables independientes e incluyes su producto en la regresión, por ejemplo
+
+```math
+Y=\beta_0 + \beta_1X + \beta_2Z +\beta_3XZ + \epsilon
+```
+* ¿Cómo interpretamos los términos de interacción? Dos preguntas:
+* 1.- ¿Cuál es el efecto de una variable $X$ cuándo hay una interacción entre $X$ y otra variable del modelo?
+* 2.- ¿Cómo se interpreta el término de interacción?
+"""
+
+# ╔═╡ a10a06c1-7f6d-43d4-8e04-648781e6f5d3
+md"""
+### ¿Cuál es el efecto de una variable $X$ cuándo hay una interacción entre $X$ y otra variable del modelo?
+
+Si tenemos la regresión
+```math
+Y=\beta_0 + \beta_1X + \beta_2Z +\beta_3XZ + \epsilon
+```
+
+El cambio en $Y$ por un cambio en una unidad de $X$ es
 
 
+```math
+Y= \beta_1+\beta_3Z 
+```
 
-[2]: Murphy, K. P. (2022). Probabilistic machine learning: an introduction. MIT press.
+Es decir, no hay un valor único del cambio en $Y$ por $X$, depende de $Z$. De manera que nos preguntamos cuál es el efecto de $X$ **dado el valor** de $Z$. 
 
 """
 
-# ╔═╡ eb4e6bff-158c-4100-8f72-c5f48533b101
+# ╔═╡ 11a7742d-aff3-4063-8660-386bdc0e82c9
+md"""
+### ¿Cómo se interpreta el término de interacción?
 
+* El coeficiente $\beta_3$ nos dice **cuánto más fuerte es el efecto de** $X$ **en** $Y$ **cuando** $Z$ **se incrementa en una unidad**.
+
+* Supongamos una variable de interacción binaria. Tenemos la ecuación de regresión
+
+```math
+Y = \beta_0 + \beta_1X + \beta_2 \text{Child} + \beta_3 X\times \text{Child}
+```
+
+* Donde $\text{Child}$ es una variable binaria igual a $1$ si hay un infante y $0$ en caso contrario. 
+* Sabemos que el efecto de $X$ sobre $Y$ es igual a
+
+```math
+\beta_1 + \beta_3\text{Child}
+```
+* Lo que indica que el efecto de $X$ en $Y$, cuando $\text{Child}=0$, es igual a $\beta_1$, es decir, el  efecto de $X$ en $Y$, cuando no hay infantes, es igual a $\beta_1$.
+* El  efecto de $X$ en $Y$, cuando hay infantes ($\text{Child}=1$), es igual a $\beta_1 + \beta_3$.
+* Cuando encontramos significancia estadística e interpretabilidad del coeficiente de interacción $\beta_3$, podemos decir que **el efecto de $X$ en $Y$ difiere entre grupos que tienen infantes y los que no los tienen**.
+"""
+
+# ╔═╡ 8cf93a7e-5e34-47bf-ba49-55305661a7da
+md"""
+## Volvamos al ejemplo de puntaje de inspección
+
+Agregamos dos interacciones a nuestra regresión de puntaje de inspección:
+
+```math
+\begin{multline}
+\text{InspectionScore} = \beta_0 + \beta_1 \text{NumberofLocations}+\\ \beta_2 \text{YearofInspection} + \beta_3  \text{NumberofLocations} \times \text{YearofInspection}+ \varepsilon
+\end{multline}
+
+```
+
+```math
+
+\begin{multline}
+\text{InspectionScore} = \beta_0 + \beta_1 \text{NumberofLocations}+ \\ \beta_2 \text{YearofInspection} + \beta_3  \text{NumberofLocations} \times \text{Weekend}+ \varepsilon
+\end{multline}
+```
+
+El coeficiente $\beta_3$ del término de interacción $\text{NumberofLocations} \times \text{Weekend}$ resultó estadísticamente significativo. Podemos decir que cada año, la relación entre un incremento unitario en la cantidad de sucursales y el puntaje de inspección se vuelve más positivo en $\beta_3 = 0.001$
+"""
+
+# ╔═╡ eb4e6bff-158c-4100-8f72-c5f48533b101
+begin
+	## 6ta regresion : interacción locations * years
+	rr6 = reg(res, @formula(inspection_score ~ NumberofLocations + Year+ NumberofLocations*Year));
+
+	## 7ma regresión : interacción locations * weekend
+	rr7 = reg(res, @formula(inspection_score ~ NumberofLocations + Year+ NumberofLocations*Weekend));
+
+	## Construimos tabla de regresión
+	regtable(
+	    rr4,rr6,rr7;
+	    render = AsciiTable(),
+	    regression_statistics = [
+	        Nobs => "Obs.",
+	        R2, 
+			FStat, 
+			AdjR2,],
+		below_statistic = ConfInt, confint_level=0.95
+	)
+
+end
+
+# ╔═╡ 1256e96e-7730-4038-8f0f-26ee5250d99a
+md"""
+## Términos de interacción
+* Siempre mantén en mente : piensa cuidadosamente el **por qué** vas a incluir términos de interacción.
+* ¿Por qué  hincapié en pensar cuidadosamente qué términos de interacción agregar?
+* Hay muchos términos de interacción diferentes que son tentadores.
+* ¿El efecto de la capacitación laboral difiere entre géneros? ¿Entre carreras? ¿Entre diferentes edades? 
+* Acotar la especificación téorica al problema que queremos modelar.
+* ¿Hay una razón teórica sólida como para esperar efectos distintos entre subgrupos?
+"""
+
+# ╔═╡ 68282646-0138-46a9-bfac-5e519e0f8fb3
+md"""
+## Consideraciones del modelo de regresión lineal
+* Supuestos del modelo de regresión lineal (comportamiento del término de error).
+  * El término de error $\varepsilon$ se distribuye como una distribución normal con media $0$ y varinza constante $\varepsilon \sim N(0, \sigma^2_{\varepsilon})$.
+  * El valor esperado del error es independiente de las variables independientes $E[\varepsilon|x] = E[\varepsilon]=0$. Supuesto de exogeneidad. 
+* Variables instrumentales para resolver endogeneidad.
+* Estimación robusta de los errores.
+* Ponderación muestral del conjunto de datos.
+* Colinearidad.
+* Regresión con términos de penalización
+"""
+
+# ╔═╡ 3e8430c4-afae-489d-b9ef-d19b1c50207e
+md"""
+## Consideraciones del modelo de regresión lineal : Causalidad
+* ¿$X$ causa a $Y$?
+* ¿La política o programa $X$ causa un efecto en la variable de interés $Y$? 
+* Sí lo hay, ¿Qué tan grande es?
+* Para poder encontrar un efecto causal tenemos que seguir una **estrategia de identificación**.
+* **Inferencia causal**.
+* Enfoque experimental :  RCT (Randomized Controlled Trial) $\rightarrow$ Construir un contrafactual. Grupos de control y grupos de tratamiento.
+* Efecto causal medio : *Average treatment effect*.
+"""
+
+# ╔═╡ 55ac4f86-9373-460d-bf06-a91dd95837f9
+md"""
+## Consideraciones del modelo de regresión lineal : Métodos no experimentales-Experimentos naturales
+* Variables Instrumentales
+* Efectos fijos y diferencias en diferencias
+* Diseño de regresión discontinua
+* Emparejamiento (Matching)
+* Simulación
+"""
+
+# ╔═╡ 1aa5712e-14d7-4f36-bc73-c209775c27ea
+md"""
+## Revolución de credibilidad
+
+"""
+
+# ╔═╡ fbf04884-492f-41d2-8a1a-a0333c15bab5
+html"""
+<p>Small planet, small picture:</p>
+
+<img src="https://raw.githubusercontent.com/milocortes/econometria_relaciones_internacionales/main/src/images/statisticaladjustment-logoutlier-1.png"
+	width="200"
+	alt="Pluto (dwarf planet)">
+"""
+
+# ╔═╡ 19bc68bd-8763-480e-9127-d4faba57216d
+md"""
+## Consideraciones del modelo de regresión lineal : Series de tiempo
+* Correlaciones espurias.
+* Series estacionarias vs Series no estacionarias.
+* Pruebas de raíz unitaria.
+* Cointegración.
+
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2373,8 +2652,26 @@ version = "1.4.1+1"
 # ╟─14afc93a-b477-466b-9766-f38ca7cc1864
 # ╟─44ae93d1-56be-4526-ac2c-f0abc2220b67
 # ╟─3c581ed0-a1e1-46bc-abd9-163a94be0574
-# ╠═cb6e1fc3-25d5-415f-8378-dd58ef285e15
+# ╟─cb6e1fc3-25d5-415f-8378-dd58ef285e15
+# ╟─e585be31-ea77-41ce-9f33-ab9db7d30ca1
+# ╟─4fddea51-3370-4315-a4e8-7ef0fbbb143b
+# ╟─1dd12350-3754-4944-954e-2a4d18c27721
+# ╟─eec4842b-e47b-44d7-8d5e-f6e8183ef294
+# ╟─b6a5582e-f687-4b0c-9cb3-6db97656710a
+# ╟─8be9804d-0620-4fb1-853a-571e120015e8
+# ╟─47a4b14e-9b5e-4eb6-9212-876321b0c0ba
+# ╟─f47a8af1-6635-4f79-ab7f-c7055f59dc48
+# ╟─871e3fe4-e398-4d9a-bd61-23e5dc008545
+# ╟─a10a06c1-7f6d-43d4-8e04-648781e6f5d3
+# ╟─11a7742d-aff3-4063-8660-386bdc0e82c9
 # ╟─8cf93a7e-5e34-47bf-ba49-55305661a7da
-# ╠═eb4e6bff-158c-4100-8f72-c5f48533b101
+# ╟─eb4e6bff-158c-4100-8f72-c5f48533b101
+# ╟─1256e96e-7730-4038-8f0f-26ee5250d99a
+# ╟─68282646-0138-46a9-bfac-5e519e0f8fb3
+# ╟─3e8430c4-afae-489d-b9ef-d19b1c50207e
+# ╟─55ac4f86-9373-460d-bf06-a91dd95837f9
+# ╟─1aa5712e-14d7-4f36-bc73-c209775c27ea
+# ╠═fbf04884-492f-41d2-8a1a-a0333c15bab5
+# ╟─19bc68bd-8763-480e-9127-d4faba57216d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
